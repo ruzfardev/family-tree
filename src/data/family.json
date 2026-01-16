@@ -1,0 +1,232 @@
+{
+    "members": [
+        {
+            "id": "ggf1",
+            "name": "William Smith",
+            "birthDate": "1920",
+            "deathDate": "1995",
+            "gender": "male",
+            "spouseId": "ggm1",
+            "parentIds": []
+        },
+        {
+            "id": "ggm1",
+            "name": "Eleanor Smith",
+            "birthDate": "1922",
+            "deathDate": "2000",
+            "gender": "female",
+            "spouseId": "ggf1",
+            "parentIds": []
+        },
+        {
+            "id": "ggf2",
+            "name": "Robert Johnson",
+            "birthDate": "1918",
+            "deathDate": "1990",
+            "gender": "male",
+            "spouseId": "ggm2",
+            "parentIds": []
+        },
+        {
+            "id": "ggm2",
+            "name": "Margaret Johnson",
+            "birthDate": "1920",
+            "deathDate": "1998",
+            "gender": "female",
+            "spouseId": "ggf2",
+            "parentIds": []
+        },
+        {
+            "id": "gf1",
+            "name": "James Smith",
+            "birthDate": "1945",
+            "deathDate": "2018",
+            "gender": "male",
+            "spouseId": "gm1",
+            "parentIds": [
+                "ggf1",
+                "ggm1"
+            ]
+        },
+        {
+            "id": "gm1",
+            "name": "Patricia Johnson",
+            "birthDate": "1948",
+            "gender": "female",
+            "spouseId": "gf1",
+            "parentIds": [
+                "ggf2",
+                "ggm2"
+            ]
+        },
+        {
+            "id": "gf2",
+            "name": "Thomas Williams",
+            "birthDate": "1942",
+            "deathDate": "2015",
+            "gender": "male",
+            "spouseId": "gm2",
+            "parentIds": []
+        },
+        {
+            "id": "gm2",
+            "name": "Barbara Williams",
+            "birthDate": "1945",
+            "gender": "female",
+            "spouseId": "gf2",
+            "parentIds": []
+        },
+        {
+            "id": "f1",
+            "name": "Michael Smith",
+            "birthDate": "1970",
+            "gender": "male",
+            "spouseId": "m1",
+            "parentIds": [
+                "gf1",
+                "gm1"
+            ]
+        },
+        {
+            "id": "m1",
+            "name": "Jennifer Williams",
+            "birthDate": "1972",
+            "gender": "female",
+            "spouseId": "f1",
+            "parentIds": [
+                "gf2",
+                "gm2"
+            ]
+        },
+        {
+            "id": "f1_sibling1",
+            "name": "David Smith",
+            "birthDate": "1968",
+            "gender": "male",
+            "spouseId": "f1_sibling1_spouse",
+            "parentIds": [
+                "gf1",
+                "gm1"
+            ]
+        },
+        {
+            "id": "f1_sibling1_spouse",
+            "name": "Linda Brown",
+            "birthDate": "1970",
+            "gender": "female",
+            "spouseId": "f1_sibling1",
+            "parentIds": []
+        },
+        {
+            "id": "f1_sibling2",
+            "name": "Susan Smith",
+            "birthDate": "1975",
+            "gender": "female",
+            "parentIds": [
+                "gf1",
+                "gm1"
+            ]
+        },
+        {
+            "id": "c1",
+            "name": "Christopher Smith",
+            "birthDate": "1995",
+            "gender": "male",
+            "spouseId": "c1_spouse",
+            "parentIds": [
+                "f1",
+                "m1"
+            ]
+        },
+        {
+            "id": "c1_spouse",
+            "name": "Amanda Taylor",
+            "birthDate": "1996",
+            "gender": "female",
+            "spouseId": "c1",
+            "parentIds": []
+        },
+        {
+            "id": "c2",
+            "name": "Emily Smith",
+            "birthDate": "1998",
+            "gender": "female",
+            "parentIds": [
+                "f1",
+                "m1"
+            ]
+        },
+        {
+            "id": "c3",
+            "name": "Matthew Smith",
+            "birthDate": "2001",
+            "gender": "male",
+            "parentIds": [
+                "f1",
+                "m1"
+            ]
+        },
+        {
+            "id": "cousin1",
+            "name": "Ryan Smith",
+            "birthDate": "1992",
+            "gender": "male",
+            "parentIds": [
+                "f1_sibling1",
+                "f1_sibling1_spouse"
+            ]
+        },
+        {
+            "id": "cousin2",
+            "name": "Jessica Smith",
+            "birthDate": "1995",
+            "gender": "female",
+            "spouseId": "cousin2_spouse",
+            "parentIds": [
+                "f1_sibling1",
+                "f1_sibling1_spouse"
+            ]
+        },
+        {
+            "id": "cousin2_spouse",
+            "name": "Daniel Martinez",
+            "birthDate": "1993",
+            "gender": "male",
+            "spouseId": "cousin2",
+            "parentIds": []
+        },
+        {
+            "id": "gc1",
+            "name": "Olivia Smith",
+            "birthDate": "2020",
+            "gender": "female",
+            "parentIds": [
+                "c1",
+                "c1_spouse"
+            ]
+        },
+        {
+            "id": "gc2",
+            "name": "Ethan Smith",
+            "birthDate": "2023",
+            "gender": "male",
+            "parentIds": [
+                "c1",
+                "c1_spouse"
+            ]
+        },
+        {
+            "id": "gc3",
+            "name": "Sophia Martinez",
+            "birthDate": "2018",
+            "gender": "female",
+            "parentIds": [
+                "cousin2",
+                "cousin2_spouse"
+            ]
+        }
+    ],
+    "settings": {
+        "direction": "TB"
+    }
+}
