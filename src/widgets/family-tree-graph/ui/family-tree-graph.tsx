@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react';
 import {
     ReactFlow,
     Background,
+    BackgroundVariant,
     Panel,
     useNodesState,
     useEdgesState,
@@ -17,6 +18,7 @@ import { PersonNode } from '@/entities/person/ui/person-node';
 import { CoupleNode } from '@/entities/person/ui/couple-node';
 import { GraphToolbar } from '@/features/layout-controls';
 import { SidebarPanel } from '@/features/edit-person';
+import { AddPersonProvider, useAddPersonContext } from '@/features/add-person';
 import { calculateDagreLayout } from '@/shared/lib/layout-engine/src';
 
 import { transformFamilyToGraph } from '../lib/transform-data';
@@ -35,6 +37,7 @@ const edgeTypes: EdgeTypes = {
 
 function FamilyTreeGraphInner(): React.ReactNode {
     const { data, selectedPersonId, setSelectedPersonId, hoveredNodeId } = useFamilyContext();
+    const { openAddModal } = useAddPersonContext();
     const { fitView, setCenter, getZoom } = useReactFlow();
 
     const { nodes: initialNodes, edges: initialEdges } = useMemo(() => transformFamilyToGraph(data), [data]);
@@ -56,9 +59,22 @@ function FamilyTreeGraphInner(): React.ReactNode {
     const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
 
     useEffect(() => {
-        setNodes(layoutedNodes);
+        // Add onAddAction callback to all person and couple nodes
+        const nodesWithCallbacks = layoutedNodes.map((node) => {
+            if (node.type === 'person' || node.type === 'couple') {
+                return {
+                    ...node,
+                    data: {
+                        ...node.data,
+                        onAddAction: openAddModal,
+                    },
+                };
+            }
+            return node;
+        });
+        setNodes(nodesWithCallbacks);
         setEdges(layoutedEdges);
-    }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
+    }, [layoutedNodes, layoutedEdges, setNodes, setEdges, openAddModal]);
 
     useEffect(() => {
         // Fit view when layout changes with smooth animation
@@ -68,7 +84,7 @@ function FamilyTreeGraphInner(): React.ReactNode {
         return () => clearTimeout(timer);
     }, [data.settings.direction, fitView]);
 
-    // Center on selected node with smooth animation
+    // Center on selected node with smooth animation after a short delay
     useEffect(() => {
         if (!selectedPersonId) return;
 
@@ -85,16 +101,21 @@ function FamilyTreeGraphInner(): React.ReactNode {
         });
 
         if (selectedNode) {
-            // Get node dimensions (approximate)
-            const nodeWidth = selectedNode.type === 'couple' ? 300 : 164;
-            const nodeHeight = selectedNode.type === 'couple' ? 80 : 60;
+            // Add a small delay before centering for a smoother UX
+            const timer = setTimeout(() => {
+                // Get node dimensions (approximate)
+                const nodeWidth = selectedNode.type === 'couple' ? 300 : 164;
+                const nodeHeight = selectedNode.type === 'couple' ? 80 : 60;
 
-            // Center on the node with current zoom level
-            const x = selectedNode.position.x + nodeWidth / 2;
-            const y = selectedNode.position.y + nodeHeight / 2;
-            const zoom = getZoom();
+                // Center on the node with current zoom level
+                const x = selectedNode.position.x + nodeWidth / 2;
+                const y = selectedNode.position.y + nodeHeight / 2;
+                const zoom = getZoom();
 
-            setCenter(x, y, { zoom, duration: 500 });
+                setCenter(x, y, { zoom, duration: 800 });
+            }, 150);
+
+            return () => clearTimeout(timer);
         }
     }, [selectedPersonId, nodes, setCenter, getZoom]);
 
@@ -185,9 +206,14 @@ function FamilyTreeGraphInner(): React.ReactNode {
             minZoom={0.1}
             maxZoom={2}
             proOptions={{ hideAttribution: true }}
-            className="bg-secondary"
+            style={{ backgroundColor: 'var(--color-bg-tertiary)' }}
         >
-            <Background gap={20} size={1} />
+            <Background
+                variant={BackgroundVariant.Dots}
+                gap={24}
+                size={2}
+                color="var(--color-border-primary)"
+            />
             <Panel position="top-left" className="!m-4">
                 <GraphToolbar />
             </Panel>
@@ -201,7 +227,9 @@ function FamilyTreeGraphInner(): React.ReactNode {
 export function FamilyTreeGraph(): React.ReactNode {
     return (
         <ReactFlowProvider>
-            <FamilyTreeGraphInner />
+            <AddPersonProvider>
+                <FamilyTreeGraphInner />
+            </AddPersonProvider>
         </ReactFlowProvider>
     );
 }

@@ -41,6 +41,10 @@ interface FamilyContextValue {
     deletePerson: (id: string) => void;
     setDirection: (direction: LayoutDirection) => void;
     getPersonById: (id: string) => Person | undefined;
+    getChildrenOf: (personId: string) => Person[];
+    hasChildren: (personId: string) => boolean;
+    getSpouseOf: (personId: string) => Person | undefined;
+    getParentsOf: (personId: string) => Person[];
 }
 
 const FamilyContext = createContext<FamilyContextValue | null>(null);
@@ -134,6 +138,32 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
 
     const getPersonById = useCallback((id: string) => data.members.find((p) => p.id === id), [data.members]);
 
+    const getChildrenOf = useCallback(
+        (personId: string) => data.members.filter((p) => p.parentIds.includes(personId)),
+        [data.members]
+    );
+
+    const hasChildren = useCallback(
+        (personId: string) => data.members.some((p) => p.parentIds.includes(personId)),
+        [data.members]
+    );
+
+    const getSpouseOf = useCallback(
+        (personId: string) => {
+            const person = data.members.find((p) => p.id === personId);
+            return person?.spouseId ? data.members.find((p) => p.id === person.spouseId) : undefined;
+        },
+        [data.members]
+    );
+
+    const getParentsOf = useCallback(
+        (personId: string) => {
+            const person = data.members.find((p) => p.id === personId);
+            return person ? data.members.filter((p) => person.parentIds.includes(p.id)) : [];
+        },
+        [data.members]
+    );
+
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center bg-primary">
@@ -163,6 +193,10 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
         deletePerson,
         setDirection,
         getPersonById,
+        getChildrenOf,
+        hasChildren,
+        getSpouseOf,
+        getParentsOf,
     };
 
     return <FamilyContext.Provider value={value}>{children}</FamilyContext.Provider>;
