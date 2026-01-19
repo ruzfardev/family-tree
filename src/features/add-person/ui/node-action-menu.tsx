@@ -1,4 +1,4 @@
-import { Plus, UserPlus01, Users01, Heart } from '@untitledui/icons';
+import { Plus, UserPlus01, Users01, Heart, ChevronDown, ChevronUp } from '@untitledui/icons';
 import { Button as AriaButton } from 'react-aria-components';
 
 import type { Person } from '@/entities/person';
@@ -11,16 +11,19 @@ import type { AddPersonContext } from '../model/types';
 interface NodeActionMenuProps {
     person: Person;
     onAction: (context: AddPersonContext) => void;
+    isCollapsed?: boolean;
+    onToggleCollapse?: () => void;
     className?: string;
 }
 
-export function NodeActionMenu({ person, onAction, className }: NodeActionMenuProps): React.ReactNode {
-    const { getParentsOf, getSpouseOf } = useFamilyContext();
+export function NodeActionMenu({ person, onAction, isCollapsed, onToggleCollapse, className }: NodeActionMenuProps): React.ReactNode {
+    const { getParentsOf, getSpouseOf, hasChildren } = useFamilyContext();
 
     const parents = getParentsOf(person.id);
     const spouse = getSpouseOf(person.id);
     const canAddParent = parents.length < 2;
     const canAddSpouse = !spouse;
+    const canCollapse = hasChildren(person.id) && onToggleCollapse;
 
     const handleAddChild = () => {
         onAction({
@@ -68,6 +71,16 @@ export function NodeActionMenu({ person, onAction, className }: NodeActionMenuPr
                     )}
                     {canAddSpouse && (
                         <Dropdown.Item label="Add Spouse" icon={Heart} onAction={handleAddSpouse} />
+                    )}
+                    {canCollapse && (
+                        <>
+                            <Dropdown.Separator />
+                            <Dropdown.Item
+                                label={isCollapsed ? 'Expand Descendants' : 'Collapse Descendants'}
+                                icon={isCollapsed ? ChevronDown : ChevronUp}
+                                onAction={onToggleCollapse}
+                            />
+                        </>
                     )}
                 </Dropdown.Menu>
             </Dropdown.Popover>

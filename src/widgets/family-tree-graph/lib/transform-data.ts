@@ -58,6 +58,12 @@ export function transformFamilyToGraph(data: FamilyData, options: TransformOptio
     // Create a map for quick lookup
     const memberMap = new Map<string, Person>(data.members.map((m) => [m.id, m]));
 
+    // Track which nodes have connections (to hide handles without connections)
+    const nodesWithParentConnection = new Set<string>();
+    const nodesWithChildConnection = new Set<string>();
+    // Track specific person IDs that have parent connections (for couple nodes)
+    const personsWithParentConnection = new Set<string>();
+
     // Compute hidden person IDs (descendants of collapsed nodes)
     const collapsedPersonIds: string[] = [];
     collapsedNodeIds.forEach((nodeId) => {
@@ -153,6 +159,11 @@ export function transformFamilyToGraph(data: FamilyData, options: TransformOptio
         // Determine target handle - use person-specific handle if child is in a couple node
         const targetHandle = personToCoupleNode.has(person.id) ? `parents-${person.id}` : 'parents';
 
+        // Track connections for hiding handles
+        nodesWithChildConnection.add(parentNodeId);
+        nodesWithParentConnection.add(childNodeId);
+        personsWithParentConnection.add(person.id);
+
         // Avoid duplicate edges (use person.id to make edges unique per person, not per node)
         const edgeId = `edge-${parentNodeId}-${person.id}`;
         if (!edges.some((e) => e.id === edgeId)) {
@@ -173,6 +184,24 @@ export function transformFamilyToGraph(data: FamilyData, options: TransformOptio
                     isDimmed: false,
                 },
             });
+        }
+    });
+
+    // Update nodes with connection info
+    nodes.forEach((node) => {
+        const hasParentConnection = nodesWithParentConnection.has(node.id);
+        const hasChildConnection = nodesWithChildConnection.has(node.id);
+
+        if (node.type === 'couple') {
+            const coupleData = node.data as unknown as CoupleNodeData;
+            // For couple nodes, track each person's parent connection separately
+            coupleData.hasChildConnection = hasChildConnection;
+            coupleData.person1HasParentConnection = personsWithParentConnection.has(coupleData.person1.id);
+            coupleData.person2HasParentConnection = personsWithParentConnection.has(coupleData.person2.id);
+        } else {
+            const personData = node.data as unknown as PersonNodeData;
+            personData.hasParentConnection = hasParentConnection;
+            personData.hasChildConnection = hasChildConnection;
         }
     });
 

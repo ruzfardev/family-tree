@@ -1,5 +1,6 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
+import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
 import fs from "fs";
 import { defineConfig, type Plugin } from "vite";
@@ -42,8 +43,53 @@ function familyTreeApi(): Plugin {
 }
 
 export default defineConfig({
-    plugins: [react(), tailwindcss(), familyTreeApi()],
-    server:{
+    plugins: [
+        react(),
+        tailwindcss(),
+        familyTreeApi(),
+        VitePWA({
+            registerType: "prompt",
+            includeAssets: ["logo.png", "apple-touch-icon.png"],
+            manifest: {
+                name: "Family Tree",
+                short_name: "FamilyTree",
+                description: "Interactive family tree visualization",
+                theme_color: "#7f56d9",
+                background_color: "#ffffff",
+                display: "standalone",
+                orientation: "any",
+                start_url: "/",
+                icons: [
+                    { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
+                    { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
+                    { src: "pwa-512x512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+                ],
+            },
+            workbox: {
+                globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+                runtimeCaching: [
+                    {
+                        urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "google-fonts-cache",
+                            expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                        },
+                    },
+                    {
+                        urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "gstatic-fonts-cache",
+                            expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+                        },
+                    },
+                ],
+            },
+            devOptions: { enabled: true },
+        }),
+    ],
+    server: {
         port: 7474,
     },
     resolve: {

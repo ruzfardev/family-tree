@@ -420,6 +420,6 @@
         }
     ],
     "settings": {
-        "direction": "TB"
+        "direction": "LR"
     }
 }

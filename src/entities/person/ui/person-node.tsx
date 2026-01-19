@@ -1,5 +1,5 @@
 import { Handle } from '@xyflow/react';
-import { ChevronDown, User01, User02 } from '@untitledui/icons';
+import { User01, User02 } from '@untitledui/icons';
 import { motion } from 'motion/react';
 
 import type { Person } from '../model/types';
@@ -18,6 +18,8 @@ export interface PersonNodeData {
     isHighlighted?: boolean;
     isDimmed?: boolean;
     isCollapsed?: boolean;
+    hasParentConnection?: boolean;
+    hasChildConnection?: boolean;
     onAddAction?: (context: AddPersonContext) => void;
     onToggleCollapse?: (nodeId: string) => void;
 }
@@ -28,11 +30,10 @@ interface PersonNodeProps {
 }
 
 export function PersonNode({ data, selected }: PersonNodeProps): React.ReactNode {
-    const { person, direction, isHighlighted, isDimmed, isCollapsed, onAddAction, onToggleCollapse } = data;
-    const { selectedPersonId, setSelectedPersonId, setHoveredNodeId, hasChildren } = useFamilyContext();
+    const { person, direction, isHighlighted, isDimmed, isCollapsed, hasParentConnection, hasChildConnection, onAddAction, onToggleCollapse } = data;
+    const { selectedPersonId, setSelectedPersonId, setHoveredNodeId } = useFamilyContext();
     const isSelected = selectedPersonId === person.id || selected || isHighlighted;
     const handlePositions = getHandlePositions(direction);
-    const showCollapseButton = hasChildren(person.id) && onToggleCollapse;
 
     const GenderIcon = person.gender === 'female' ? User02 : User01;
     const dateRange = formatDateRange(person.birthDate, person.deathDate);
@@ -40,19 +41,23 @@ export function PersonNode({ data, selected }: PersonNodeProps): React.ReactNode
 
     return (
         <>
-            <Handle
-                type="target"
-                id="parents"
-                position={handlePositions.parents}
-                className="!bg-border-primary"
-            />
+            {hasParentConnection && (
+                <Handle
+                    type="target"
+                    id="parents"
+                    position={handlePositions.parents}
+                    className="!bg-border-primary"
+                />
+            )}
 
-            <Handle
-                type="source"
-                id="children"
-                position={handlePositions.children}
-                className="!bg-border-primary"
-            />
+            {hasChildConnection && (
+                <Handle
+                    type="source"
+                    id="children"
+                    position={handlePositions.children}
+                    className="!bg-border-primary"
+                />
+            )}
 
             <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
@@ -88,29 +93,16 @@ export function PersonNode({ data, selected }: PersonNodeProps): React.ReactNode
                         <span className="truncate text-sm font-semibold text-primary">{person.name}</span>
                         <span className="truncate text-xs text-tertiary">{dateRange}</span>
                     </div>
-                    {showCollapseButton && (
-                        <button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                onToggleCollapse(person.id);
-                            }}
-                            className={cx(
-                                'flex size-6 shrink-0 items-center justify-center rounded-md',
-                                'opacity-0 transition-all duration-200',
-                                'hover:bg-secondary',
-                                'group-hover:opacity-100',
-                                isCollapsed && 'opacity-100 bg-secondary'
-                            )}
-                            aria-label={isCollapsed ? 'Expand descendants' : 'Collapse descendants'}
-                        >
-                            <ChevronDown
-                                className={cx('size-4 text-tertiary transition-transform', isCollapsed && 'rotate-180')}
-                            />
-                        </button>
-                    )}
                 </div>
 
-                {onAddAction && <NodeActionMenu person={person} onAction={onAddAction} />}
+                {onAddAction && (
+                    <NodeActionMenu
+                        person={person}
+                        onAction={onAddAction}
+                        isCollapsed={isCollapsed}
+                        onToggleCollapse={onToggleCollapse ? () => onToggleCollapse(person.id) : undefined}
+                    />
+                )}
             </motion.div>
         </>
     );
