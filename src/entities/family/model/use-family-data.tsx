@@ -2,6 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 
 import type { Person } from '@/entities/person/model/types';
 import { LoadingIndicator } from '@/components/application/loading-indicator/loading-indicator';
+import { API_BASE_URL } from '@/config/api';
 
 import type { FamilyData, LayoutDirection } from './types';
 
@@ -11,7 +12,7 @@ const DEFAULT_DATA: FamilyData = {
 };
 
 async function loadFamilyData(): Promise<FamilyData> {
-    const response = await fetch('/api/family');
+    const response = await fetch(`${API_BASE_URL}/family`);
     if (!response.ok) {
         throw new Error('Failed to load family data');
     }
@@ -19,7 +20,7 @@ async function loadFamilyData(): Promise<FamilyData> {
 }
 
 async function saveFamilyData(data: FamilyData): Promise<void> {
-    const response = await fetch('/api/family', {
+    const response = await fetch(`${API_BASE_URL}/family`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

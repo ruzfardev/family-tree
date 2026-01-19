@@ -10,7 +10,7 @@ export function FamilyTreeEmpty({ onAddFirstPerson }: FamilyTreeEmptyProps) {
         <div className="flex h-full items-center justify-center bg-tertiary">
             <EmptyState size="lg">
                 <EmptyState.Header pattern="circle">
-                    <img src="/logo.png" alt="Family Tree" className="size-16" />
+                    <img src="logo.png" alt="Family Tree" className="size-16" />
                 </EmptyState.Header>
                 <EmptyState.Content>
                     <EmptyState.Title>Start Your Family Tree</EmptyState.Title>

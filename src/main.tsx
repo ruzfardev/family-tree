@@ -24,7 +24,7 @@ const updateSW = registerSW({
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
-            <BrowserRouter>
+            <BrowserRouter basename="/family-tree">
                 <RouteProvider>
                     <Routes>
                         <Route path="/" element={<FamilyTreePage />} />
