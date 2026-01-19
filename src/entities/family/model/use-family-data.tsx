@@ -10,7 +10,7 @@ const DEFAULT_DATA: FamilyData = {
     settings: { direction: 'TB' },
 };
 
-async function loadFromFile(): Promise<FamilyData> {
+async function loadFamilyData(): Promise<FamilyData> {
     const response = await fetch('/api/family');
     if (!response.ok) {
         throw new Error('Failed to load family data');
@@ -18,7 +18,7 @@ async function loadFromFile(): Promise<FamilyData> {
     return response.json();
 }
 
-async function saveToFile(data: FamilyData): Promise<void> {
+async function saveFamilyData(data: FamilyData): Promise<void> {
     const response = await fetch('/api/family', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -84,9 +84,9 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
     }, []);
 
     useEffect(() => {
-        loadFromFile()
+        loadFamilyData()
             .then(setData)
-            .catch((err) => setError(err.message))
+            .catch((err: Error) => setError(err.message))
             .finally(() => setIsLoading(false));
     }, []);
 
@@ -96,7 +96,7 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
                 ...prevData,
                 members: prevData.members.map((person) => (person.id === id ? { ...person, ...updates } : person)),
             };
-            saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+            saveFamilyData(newData).catch((err) => console.error('Failed to save:', err));
             return newData;
         });
     }, []);
@@ -107,7 +107,7 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
                 ...prevData,
                 members: [...prevData.members, person],
             };
-            saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+            saveFamilyData(newData).catch((err) => console.error('Failed to save:', err));
             return newData;
         });
     }, []);
@@ -131,7 +131,7 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
                     ...prevData,
                     members: updatedMembers,
                 };
-                saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+                saveFamilyData(newData).catch((err) => console.error('Failed to save:', err));
                 return newData;
             });
 
@@ -148,7 +148,7 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
                 ...prevData,
                 settings: { ...prevData.settings, direction },
             };
-            saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+            saveFamilyData(newData).catch((err) => console.error('Failed to save:', err));
             return newData;
         });
     }, []);
