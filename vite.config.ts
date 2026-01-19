@@ -43,6 +43,9 @@ function familyTreeApi(): Plugin {
 
 export default defineConfig({
     plugins: [react(), tailwindcss(), familyTreeApi()],
+    server:{
+        port: 7474,
+    },
     resolve: {
         alias: {
             "@": path.resolve(__dirname, "./src"),

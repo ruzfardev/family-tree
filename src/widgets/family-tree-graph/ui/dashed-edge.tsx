@@ -23,7 +23,7 @@ function DashedEdge(props: EdgeProps) {
 
     const edgeStyle: CSSProperties = {
         ...style,
-        stroke: isHighlighted ? 'var(--color-fg-brand-primary)' : 'var(--color-border-primary)',
+        stroke: isHighlighted ? 'var(--color-fg-brand-primary)' : 'var(--color-fg-quaternary)',
         strokeWidth: isHighlighted ? 2.5 : 1.5,
         strokeDasharray: '8 4',
         strokeLinecap: 'round',
@@ -33,7 +33,7 @@ function DashedEdge(props: EdgeProps) {
     };
 
     const markerId = `arrow-${id}`;
-    const markerColor = isHighlighted ? 'var(--color-fg-brand-primary)' : 'var(--color-border-primary)';
+    const markerColor = isHighlighted ? 'var(--color-fg-brand-primary)' : 'var(--color-fg-quaternary)';
 
     return (
         <>

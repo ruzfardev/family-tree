@@ -8,7 +8,6 @@ import type { Person } from '../model/types';
 import type { LayoutDirection } from '@/entities/family';
 import { useFamilyContext } from '@/entities/family';
 import type { AddPersonContext } from '@/features/add-person';
-import { Avatar } from '@/components/base/avatar/avatar';
 import { Dropdown } from '@/components/base/dropdown/dropdown';
 import { formatDateRange } from '@/shared/lib/format-date';
 import { getHandlePositions } from '@/shared/lib/get-handle-positions';
@@ -37,6 +36,7 @@ interface PersonCardProps {
 function PersonCard({ person, isSelected, onClick }: PersonCardProps) {
     const GenderIcon = person.gender === 'female' ? User02 : User01;
     const dateRange = formatDateRange(person.birthDate, person.deathDate);
+    const isFemale = person.gender === 'female';
 
     return (
         <div
@@ -46,7 +46,14 @@ function PersonCard({ person, isSelected, onClick }: PersonCardProps) {
                 isSelected ? 'bg-active' : 'hover:bg-secondary'
             )}
         >
-            <Avatar size="sm" placeholderIcon={GenderIcon} contrastBorder />
+            <div
+                className={cx(
+                    'flex size-8 shrink-0 items-center justify-center rounded-full',
+                    isFemale ? 'bg-pink-100' : 'bg-blue-100'
+                )}
+            >
+                <GenderIcon className={cx('size-5', isFemale ? 'text-pink-600' : 'text-blue-600')} />
+            </div>
             <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate text-sm font-semibold text-primary">{person.name}</span>
                 <span className="truncate text-xs text-tertiary">{dateRange}</span>
@@ -86,7 +93,20 @@ export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode
 
     return (
         <>
-            <Handle type="target" id="parents" position={handlePositions.parents} className="!bg-border-primary" />
+            <Handle
+                type="target"
+                id={`parents-${person1.id}`}
+                position={handlePositions.parents}
+                style={isHorizontalLayout ? { top: '25%' } : { left: '25%' }}
+                className="!bg-border-primary"
+            />
+            <Handle
+                type="target"
+                id={`parents-${person2.id}`}
+                position={handlePositions.parents}
+                style={isHorizontalLayout ? { top: '75%' } : { left: '75%' }}
+                className="!bg-border-primary"
+            />
             <div className="group relative">
                 <div
                     onMouseEnter={() => setHoveredNodeId(coupleNodeId)}

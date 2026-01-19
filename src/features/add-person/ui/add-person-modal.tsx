@@ -48,6 +48,8 @@ export function AddPersonModal({ isOpen, context, onClose, onSubmit }: AddPerson
                 return 'Add Parent';
             case 'spouse':
                 return 'Add Spouse';
+            case 'self':
+                return 'Add First Person';
         }
     };
 

@@ -24,7 +24,7 @@ function AnimatedEdge(props: EdgeProps) {
 
     const edgeStyle: CSSProperties = {
         ...style,
-        stroke: isHighlighted ? 'var(--color-fg-brand-primary)' : 'var(--color-border-primary)',
+        stroke: isHighlighted ? 'var(--color-fg-brand-primary)' : 'var(--color-fg-quaternary)',
         strokeWidth: isHighlighted ? 2.5 : 1.5,
         opacity: isDimmed ? 0.15 : 1,
         transition: 'stroke 0.2s ease, stroke-width 0.2s ease, opacity 0.2s ease',

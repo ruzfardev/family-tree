@@ -7,7 +7,6 @@ import type { LayoutDirection } from '@/entities/family';
 import { useFamilyContext } from '@/entities/family';
 import type { AddPersonContext } from '@/features/add-person';
 import { NodeActionMenu } from '@/features/add-person';
-import { Avatar } from '@/components/base/avatar/avatar';
 import { formatDateRange } from '@/shared/lib/format-date';
 import { getHandlePositions } from '@/shared/lib/get-handle-positions';
 import { cx } from '@/utils/cx';
@@ -33,6 +32,7 @@ export function PersonNode({ data, selected }: PersonNodeProps): React.ReactNode
 
     const GenderIcon = person.gender === 'female' ? User02 : User01;
     const dateRange = formatDateRange(person.birthDate, person.deathDate);
+    const isFemale = person.gender === 'female';
 
     return (
         <>
@@ -56,12 +56,20 @@ export function PersonNode({ data, selected }: PersonNodeProps): React.ReactNode
                     onMouseEnter={() => setHoveredNodeId(person.id)}
                     onMouseLeave={() => setHoveredNodeId(null)}
                     className={cx(
-                        'flex w-[164px] cursor-pointer items-center gap-2 rounded-xl border border-primary bg-primary/80 p-3 shadow-xs backdrop-blur-sm transition-all',
-                        isSelected && 'border-brand-solid ring-4 ring-brand-solid/20',
+                        'flex w-[164px] cursor-pointer items-center gap-2 rounded-xl border-l-[6px] border border-primary bg-primary/80 p-3 shadow-xs backdrop-blur-sm transition-all',
+                        isFemale ? 'border-l-pink-500' : 'border-l-blue-500',
+                        isSelected && 'ring-4 ring-brand-solid/20',
                         isDimmed && 'opacity-30'
                     )}
                 >
-                    <Avatar size="sm" placeholderIcon={GenderIcon} contrastBorder />
+                    <div
+                        className={cx(
+                            'flex size-8 shrink-0 items-center justify-center rounded-full',
+                            isFemale ? 'bg-pink-100' : 'bg-blue-100'
+                        )}
+                    >
+                        <GenderIcon className={cx('size-5', isFemale ? 'text-pink-600' : 'text-blue-600')} />
+                    </div>
                     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span className="truncate text-sm font-semibold text-primary">{person.name}</span>
                         <span className="truncate text-xs text-tertiary">{dateRange}</span>

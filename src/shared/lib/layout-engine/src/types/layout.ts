@@ -66,7 +66,7 @@ export const DEFAULT_NODE_DIMENSIONS: NodeTypeMap = {
 	default: { width: 164, height: 56 },
 	// Family tree node types
 	person: { width: 164, height: 56 },
-	couple: { width: 312, height: 56 },
+	couple: { width: 303, height: 56 },
 };
 
 /**

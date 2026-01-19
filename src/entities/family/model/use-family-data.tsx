@@ -75,66 +75,68 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
             .finally(() => setIsLoading(false));
     }, []);
 
-    const updateData = useCallback((newData: FamilyData) => {
-        setData(newData);
-        saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+    const updatePerson = useCallback((id: string, updates: Partial<Person>) => {
+        setData((prevData) => {
+            const newData = {
+                ...prevData,
+                members: prevData.members.map((person) => (person.id === id ? { ...person, ...updates } : person)),
+            };
+            saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+            return newData;
+        });
     }, []);
 
-    const updatePerson = useCallback(
-        (id: string, updates: Partial<Person>) => {
-            updateData({
-                ...data,
-                members: data.members.map((person) => (person.id === id ? { ...person, ...updates } : person)),
-            });
-        },
-        [data, updateData]
-    );
-
-    const addPerson = useCallback(
-        (person: Person) => {
-            updateData({
-                ...data,
-                members: [...data.members, person],
-            });
-        },
-        [data, updateData]
-    );
+    const addPerson = useCallback((person: Person) => {
+        setData((prevData) => {
+            const newData = {
+                ...prevData,
+                members: [...prevData.members, person],
+            };
+            saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+            return newData;
+        });
+    }, []);
 
     const deletePerson = useCallback(
         (id: string) => {
-            const person = data.members.find((p) => p.id === id);
-            if (!person) return;
+            setData((prevData) => {
+                const person = prevData.members.find((p) => p.id === id);
+                if (!person) return prevData;
 
-            // Remove spouse reference
-            const updatedMembers = data.members
-                .filter((p) => p.id !== id)
-                .map((p) => ({
-                    ...p,
-                    spouseId: p.spouseId === id ? undefined : p.spouseId,
-                    parentIds: p.parentIds.filter((parentId) => parentId !== id),
-                }));
+                // Remove spouse reference
+                const updatedMembers = prevData.members
+                    .filter((p) => p.id !== id)
+                    .map((p) => ({
+                        ...p,
+                        spouseId: p.spouseId === id ? undefined : p.spouseId,
+                        parentIds: p.parentIds.filter((parentId) => parentId !== id),
+                    }));
 
-            updateData({
-                ...data,
-                members: updatedMembers,
+                const newData = {
+                    ...prevData,
+                    members: updatedMembers,
+                };
+                saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+                return newData;
             });
 
             if (selectedPersonId === id) {
                 setSelectedPersonId(null);
             }
         },
-        [data, selectedPersonId, updateData]
+        [selectedPersonId]
     );
 
-    const setDirection = useCallback(
-        (direction: LayoutDirection) => {
-            updateData({
-                ...data,
-                settings: { ...data.settings, direction },
-            });
-        },
-        [data, updateData]
-    );
+    const setDirection = useCallback((direction: LayoutDirection) => {
+        setData((prevData) => {
+            const newData = {
+                ...prevData,
+                settings: { ...prevData.settings, direction },
+            };
+            saveToFile(newData).catch((err) => console.error('Failed to save:', err));
+            return newData;
+        });
+    }, []);
 
     const getPersonById = useCallback((id: string) => data.members.find((p) => p.id === id), [data.members]);
 

@@ -72,8 +72,11 @@ export function transformFamilyToGraph(data: FamilyData): TransformResult {
         const parentNodeId = personToCoupleNode.get(parent1.id) ?? parent1.id;
         const childNodeId = personToCoupleNode.get(person.id) ?? person.id;
 
-        // Avoid duplicate edges
-        const edgeId = `edge-${parentNodeId}-${childNodeId}`;
+        // Determine target handle - use person-specific handle if child is in a couple node
+        const targetHandle = personToCoupleNode.has(person.id) ? `parents-${person.id}` : 'parents';
+
+        // Avoid duplicate edges (use person.id to make edges unique per person, not per node)
+        const edgeId = `edge-${parentNodeId}-${person.id}`;
         if (!edges.some((e) => e.id === edgeId)) {
             edges.push({
                 id: edgeId,
@@ -81,7 +84,7 @@ export function transformFamilyToGraph(data: FamilyData): TransformResult {
                 target: childNodeId,
                 type: 'dashed',
                 sourceHandle: 'children',
-                targetHandle: 'parents',
+                targetHandle,
                 markerEnd: {
                     type: MarkerType.ArrowClosed,
                     width: 16,

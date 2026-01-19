@@ -1,6 +1,6 @@
 import type { Gender } from '@/entities/person';
 
-export type AddPersonRelation = 'child' | 'parent' | 'spouse';
+export type AddPersonRelation = 'child' | 'parent' | 'spouse' | 'self';
 
 export interface AddPersonContext {
     relation: AddPersonRelation;

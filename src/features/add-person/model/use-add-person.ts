@@ -63,6 +63,11 @@ export function useAddPerson() {
                     updatePerson(existingPersonId, { spouseId: newPersonId });
                     break;
                 }
+                case 'self': {
+                    // First person in tree - no relationships needed
+                    addPerson(newPerson);
+                    break;
+                }
             }
 
             closeModal();

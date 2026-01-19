@@ -14,6 +14,7 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { useFamilyContext } from '@/entities/family';
+import type { FamilyData } from '@/entities/family';
 import { PersonNode } from '@/entities/person/ui/person-node';
 import { CoupleNode } from '@/entities/person/ui/couple-node';
 import { GraphToolbar } from '@/features/layout-controls';
@@ -24,6 +25,7 @@ import { calculateDagreLayout } from '@/shared/lib/layout-engine/src';
 import { transformFamilyToGraph } from '../lib/transform-data';
 import AnimatedEdge from './animated-edge';
 import DashedEdge from './dashed-edge';
+import { FamilyTreeEmpty } from './family-tree-empty';
 
 const nodeTypes: NodeTypes = {
     person: PersonNode,
@@ -35,10 +37,19 @@ const edgeTypes: EdgeTypes = {
     dashed: DashedEdge,
 };
 
-function FamilyTreeGraphInner(): React.ReactNode {
-    const { data, selectedPersonId, setSelectedPersonId, hoveredNodeId } = useFamilyContext();
+interface FamilyTreeGraphContentProps {
+    data: FamilyData;
+    setSelectedPersonId: (id: string | null) => void;
+    hoveredNodeId: string | null;
+}
+
+function FamilyTreeGraphContent({
+    data,
+    setSelectedPersonId,
+    hoveredNodeId,
+}: FamilyTreeGraphContentProps): React.ReactNode {
     const { openAddModal } = useAddPersonContext();
-    const { fitView, setCenter, getZoom } = useReactFlow();
+    const { fitView } = useReactFlow();
 
     const { nodes: initialNodes, edges: initialEdges } = useMemo(() => transformFamilyToGraph(data), [data]);
 
@@ -77,47 +88,12 @@ function FamilyTreeGraphInner(): React.ReactNode {
     }, [layoutedNodes, layoutedEdges, setNodes, setEdges, openAddModal]);
 
     useEffect(() => {
-        // Fit view when layout changes with smooth animation
+        // Fit view when layout direction changes
         const timer = setTimeout(() => {
             fitView({ padding: 0.2, duration: 500 });
         }, 50);
         return () => clearTimeout(timer);
     }, [data.settings.direction, fitView]);
-
-    // Center on selected node with smooth animation after a short delay
-    useEffect(() => {
-        if (!selectedPersonId) return;
-
-        // Find the node containing the selected person
-        const selectedNode = nodes.find((node) => {
-            if (node.type === 'person') {
-                return node.id === selectedPersonId;
-            }
-            if (node.type === 'couple') {
-                const coupleData = node.data as { person1: { id: string }; person2: { id: string } };
-                return coupleData.person1.id === selectedPersonId || coupleData.person2.id === selectedPersonId;
-            }
-            return false;
-        });
-
-        if (selectedNode) {
-            // Add a small delay before centering for a smoother UX
-            const timer = setTimeout(() => {
-                // Get node dimensions (approximate)
-                const nodeWidth = selectedNode.type === 'couple' ? 300 : 164;
-                const nodeHeight = selectedNode.type === 'couple' ? 80 : 60;
-
-                // Center on the node with current zoom level
-                const x = selectedNode.position.x + nodeWidth / 2;
-                const y = selectedNode.position.y + nodeHeight / 2;
-                const zoom = getZoom();
-
-                setCenter(x, y, { zoom, duration: 800 });
-            }, 150);
-
-            return () => clearTimeout(timer);
-        }
-    }, [selectedPersonId, nodes, setCenter, getZoom]);
 
     // Handle node hover - update edges and nodes directly
     // Key: use functional setState to read current edges inside, avoiding dependency on edges state
@@ -221,6 +197,31 @@ function FamilyTreeGraphInner(): React.ReactNode {
                 <SidebarPanel />
             </Panel>
         </ReactFlow>
+    );
+}
+
+function FamilyTreeGraphInner(): React.ReactNode {
+    const { data, setSelectedPersonId, hoveredNodeId } = useFamilyContext();
+    const { openAddModal } = useAddPersonContext();
+
+    const handleAddFirstPerson = useCallback(() => {
+        openAddModal({
+            relation: 'self',
+            relatedPersonIds: [],
+        });
+    }, [openAddModal]);
+
+    // Show empty state when no family members exist
+    if (data.members.length === 0) {
+        return <FamilyTreeEmpty onAddFirstPerson={handleAddFirstPerson} />;
+    }
+
+    return (
+        <FamilyTreeGraphContent
+            data={data}
+            setSelectedPersonId={setSelectedPersonId}
+            hoveredNodeId={hoveredNodeId}
+        />
     );
 }
 
