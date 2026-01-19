@@ -127,6 +127,14 @@ export function GraphToolbar(): React.ReactNode {
 
     return (
         <div className="flex items-center gap-1 rounded-lg border border-secondary bg-primary p-1 shadow-xs">
+            {/* Logo */}
+            <div className="flex items-center px-1">
+                <img src="/logo.png" alt="Family Tree" className="size-6" />
+            </div>
+
+            {/* Divider */}
+            <div className="mx-1 h-5 w-px bg-border-secondary" />
+
             {/* Direction Controls */}
             {DIRECTION_BUTTONS.map(({ value, icon, label }) => (
                 <ButtonUtility

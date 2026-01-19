@@ -1,5 +1,3 @@
-import { Users01 } from '@untitledui/icons';
-
 import { EmptyState } from '@/components/application/empty-state/empty-state';
 import { Button } from '@/components/base/buttons/button';
 
@@ -12,7 +10,7 @@ export function FamilyTreeEmpty({ onAddFirstPerson }: FamilyTreeEmptyProps) {
         <div className="flex h-full items-center justify-center bg-tertiary">
             <EmptyState size="lg">
                 <EmptyState.Header pattern="circle">
-                    <EmptyState.FeaturedIcon icon={Users01} color="brand" />
+                    <img src="/logo.png" alt="Family Tree" className="size-16" />
                 </EmptyState.Header>
                 <EmptyState.Content>
                     <EmptyState.Title>Start Your Family Tree</EmptyState.Title>
