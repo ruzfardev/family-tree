@@ -3,6 +3,7 @@ import {
     ReactFlow,
     Background,
     BackgroundVariant,
+    MiniMap,
     Panel,
     useNodesState,
     useEdgesState,
@@ -41,17 +42,24 @@ interface FamilyTreeGraphContentProps {
     data: FamilyData;
     setSelectedPersonId: (id: string | null) => void;
     hoveredNodeId: string | null;
+    collapsedNodeIds: Set<string>;
+    toggleCollapsed: (nodeId: string) => void;
 }
 
 function FamilyTreeGraphContent({
     data,
     setSelectedPersonId,
     hoveredNodeId,
+    collapsedNodeIds,
+    toggleCollapsed,
 }: FamilyTreeGraphContentProps): React.ReactNode {
     const { openAddModal } = useAddPersonContext();
     const { fitView } = useReactFlow();
 
-    const { nodes: initialNodes, edges: initialEdges } = useMemo(() => transformFamilyToGraph(data), [data]);
+    const { nodes: initialNodes, edges: initialEdges } = useMemo(
+        () => transformFamilyToGraph(data, { collapsedNodeIds }),
+        [data, collapsedNodeIds]
+    );
 
     const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(() => {
         const result = calculateDagreLayout(initialNodes, initialEdges, {
@@ -70,7 +78,7 @@ function FamilyTreeGraphContent({
     const [edges, setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
 
     useEffect(() => {
-        // Add onAddAction callback to all person and couple nodes
+        // Add callbacks to all person and couple nodes
         const nodesWithCallbacks = layoutedNodes.map((node) => {
             if (node.type === 'person' || node.type === 'couple') {
                 return {
@@ -78,6 +86,7 @@ function FamilyTreeGraphContent({
                     data: {
                         ...node.data,
                         onAddAction: openAddModal,
+                        onToggleCollapse: toggleCollapsed,
                     },
                 };
             }
@@ -85,7 +94,7 @@ function FamilyTreeGraphContent({
         });
         setNodes(nodesWithCallbacks);
         setEdges(layoutedEdges);
-    }, [layoutedNodes, layoutedEdges, setNodes, setEdges, openAddModal]);
+    }, [layoutedNodes, layoutedEdges, setNodes, setEdges, openAddModal, toggleCollapsed]);
 
     useEffect(() => {
         // Fit view when layout direction changes
@@ -196,12 +205,26 @@ function FamilyTreeGraphContent({
             <Panel position="top-right" className="!m-4">
                 <SidebarPanel />
             </Panel>
+            <MiniMap
+                nodeStrokeWidth={3}
+                pannable
+                zoomable
+                style={{
+                    backgroundColor: 'var(--color-bg-secondary)',
+                    border: '1px solid var(--color-border-primary)',
+                    borderRadius: 8,
+                }}
+                nodeColor={(node) => {
+                    if (node.type === 'couple') return 'var(--color-fg-brand-primary)';
+                    return 'var(--color-fg-secondary)';
+                }}
+            />
         </ReactFlow>
     );
 }
 
 function FamilyTreeGraphInner(): React.ReactNode {
-    const { data, setSelectedPersonId, hoveredNodeId } = useFamilyContext();
+    const { data, setSelectedPersonId, hoveredNodeId, collapsedNodeIds, toggleCollapsed } = useFamilyContext();
     const { openAddModal } = useAddPersonContext();
 
     const handleAddFirstPerson = useCallback(() => {
@@ -221,6 +244,8 @@ function FamilyTreeGraphInner(): React.ReactNode {
             data={data}
             setSelectedPersonId={setSelectedPersonId}
             hoveredNodeId={hoveredNodeId}
+            collapsedNodeIds={collapsedNodeIds}
+            toggleCollapsed={toggleCollapsed}
         />
     );
 }

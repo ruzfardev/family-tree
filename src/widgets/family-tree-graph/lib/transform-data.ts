@@ -11,7 +11,45 @@ interface TransformResult {
     edges: Edge[];
 }
 
-export function transformFamilyToGraph(data: FamilyData): TransformResult {
+interface TransformOptions {
+    collapsedNodeIds?: Set<string>;
+}
+
+/**
+ * Get all descendant person IDs from a given set of parent IDs
+ * Also includes spouses of descendants (they should be hidden together)
+ */
+function getDescendantIds(members: Person[], parentIds: string[]): Set<string> {
+    const descendants = new Set<string>();
+    const queue = [...parentIds];
+    const memberMap = new Map<string, Person>(members.map((m) => [m.id, m]));
+
+    while (queue.length > 0) {
+        const currentId = queue.shift()!;
+        const children = members.filter((m) => m.parentIds.includes(currentId));
+        for (const child of children) {
+            if (!descendants.has(child.id)) {
+                descendants.add(child.id);
+                queue.push(child.id);
+
+                // Also hide the spouse of this descendant
+                if (child.spouseId && !descendants.has(child.spouseId)) {
+                    const spouse = memberMap.get(child.spouseId);
+                    if (spouse) {
+                        descendants.add(spouse.id);
+                        // Also traverse spouse's descendants
+                        queue.push(spouse.id);
+                    }
+                }
+            }
+        }
+    }
+
+    return descendants;
+}
+
+export function transformFamilyToGraph(data: FamilyData, options: TransformOptions = {}): TransformResult {
+    const { collapsedNodeIds = new Set() } = options;
     const nodes: Node[] = [];
     const edges: Edge[] = [];
     const processedSpouses = new Set<string>();
@@ -20,27 +58,61 @@ export function transformFamilyToGraph(data: FamilyData): TransformResult {
     // Create a map for quick lookup
     const memberMap = new Map<string, Person>(data.members.map((m) => [m.id, m]));
 
+    // Compute hidden person IDs (descendants of collapsed nodes)
+    const collapsedPersonIds: string[] = [];
+    collapsedNodeIds.forEach((nodeId) => {
+        if (nodeId.startsWith('couple-')) {
+            // Couple node ID format: couple-{person1Id}-{person2Id}
+            // Person IDs contain dashes, so we need to find them in the members list
+            const coupleIdPart = nodeId.slice('couple-'.length);
+            // Find matching person IDs from members
+            for (const member of data.members) {
+                if (coupleIdPart.startsWith(member.id + '-')) {
+                    // Found person1
+                    collapsedPersonIds.push(member.id);
+                    const person2Id = coupleIdPart.slice(member.id.length + 1);
+                    if (memberMap.has(person2Id)) {
+                        collapsedPersonIds.push(person2Id);
+                    }
+                    break;
+                }
+            }
+        } else {
+            collapsedPersonIds.push(nodeId);
+        }
+    });
+    const hiddenPersonIds = getDescendantIds(data.members, collapsedPersonIds);
+
     // Track which couple node contains which person
     const personToCoupleNode = new Map<string, string>();
 
     data.members.forEach((person) => {
+        // Skip if this person is hidden (descendant of collapsed node)
+        if (hiddenPersonIds.has(person.id)) return;
+
         // Skip if already processed as part of a couple
         if (processedSpouses.has(person.id)) return;
 
         const spouse = person.spouseId ? memberMap.get(person.spouseId) : undefined;
+        // Check if spouse is also visible
+        const visibleSpouse = spouse && !hiddenPersonIds.has(spouse.id) ? spouse : undefined;
 
-        if (spouse && !processedSpouses.has(spouse.id)) {
+        if (visibleSpouse && !processedSpouses.has(visibleSpouse.id)) {
             // Create couple node
-            const coupleNodeId = `couple-${person.id}-${spouse.id}`;
+            const coupleNodeId = `couple-${person.id}-${visibleSpouse.id}`;
             processedSpouses.add(person.id);
-            processedSpouses.add(spouse.id);
+            processedSpouses.add(visibleSpouse.id);
             personToCoupleNode.set(person.id, coupleNodeId);
-            personToCoupleNode.set(spouse.id, coupleNodeId);
+            personToCoupleNode.set(visibleSpouse.id, coupleNodeId);
+
+            // Check if this couple node is collapsed (has hidden children)
+            const isCollapsed = collapsedNodeIds.has(coupleNodeId);
 
             const nodeData: CoupleNodeData = {
                 person1: person,
-                person2: spouse,
+                person2: visibleSpouse,
                 direction,
+                isCollapsed,
             };
 
             nodes.push({
@@ -49,9 +121,10 @@ export function transformFamilyToGraph(data: FamilyData): TransformResult {
                 position: { x: 0, y: 0 },
                 data: nodeData as unknown as Record<string, unknown>,
             });
-        } else if (!spouse) {
+        } else if (!visibleSpouse) {
             // Create single person node
-            const nodeData: PersonNodeData = { person, direction };
+            const isCollapsed = collapsedNodeIds.has(person.id);
+            const nodeData: PersonNodeData = { person, direction, isCollapsed };
             nodes.push({
                 id: person.id,
                 type: 'person',
@@ -61,13 +134,18 @@ export function transformFamilyToGraph(data: FamilyData): TransformResult {
         }
     });
 
-    // Create edges from parents to children
+    // Create edges from parents to children (only for visible nodes)
     data.members.forEach((person) => {
+        // Skip if this person is hidden
+        if (hiddenPersonIds.has(person.id)) return;
         if (person.parentIds.length === 0) return;
 
         // Find parent node (could be couple or single)
         const parent1 = memberMap.get(person.parentIds[0]);
         if (!parent1) return;
+
+        // Skip if parent is hidden
+        if (hiddenPersonIds.has(parent1.id)) return;
 
         const parentNodeId = personToCoupleNode.get(parent1.id) ?? parent1.id;
         const childNodeId = personToCoupleNode.get(person.id) ?? person.id;

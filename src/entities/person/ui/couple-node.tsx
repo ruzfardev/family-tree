@@ -1,6 +1,7 @@
 import { Handle } from '@xyflow/react';
-import { Plus, Users01, UserPlus01 } from '@untitledui/icons';
+import { ChevronDown, Plus, Users01, UserPlus01 } from '@untitledui/icons';
 import { User01, User02 } from '@untitledui/icons';
+import { motion } from 'motion/react';
 import { Button as AriaButton } from 'react-aria-components';
 
 import type { Person } from '../model/types';
@@ -19,7 +20,9 @@ export interface CoupleNodeData {
     direction: LayoutDirection;
     isHighlighted?: boolean;
     isDimmed?: boolean;
+    isCollapsed?: boolean;
     onAddAction?: (context: AddPersonContext) => void;
+    onToggleCollapse?: (nodeId: string) => void;
 }
 
 interface CoupleNodeProps {
@@ -63,13 +66,17 @@ function PersonCard({ person, isSelected, onClick }: PersonCardProps) {
 }
 
 export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode {
-    const { person1, person2, direction, isHighlighted, isDimmed, onAddAction } = data;
-    const { selectedPersonId, setSelectedPersonId, setHoveredNodeId, getParentsOf } = useFamilyContext();
+    const { person1, person2, direction, isHighlighted, isDimmed, isCollapsed, onAddAction, onToggleCollapse } = data;
+    const { selectedPersonId, setSelectedPersonId, setHoveredNodeId, getParentsOf, hasChildren } = useFamilyContext();
     const coupleNodeId = `couple-${person1.id}-${person2.id}`;
     const isSelected = selectedPersonId === person1.id || selectedPersonId === person2.id || selected || isHighlighted;
     const handlePositions = getHandlePositions(direction);
 
     const isHorizontalLayout = direction === 'LR' || direction === 'RL';
+
+    // Check if couple has children (either person)
+    const coupleHasChildren = hasChildren(person1.id) || hasChildren(person2.id);
+    const showCollapseButton = coupleHasChildren && onToggleCollapse;
 
     // Check if we can add parents (need at least one person with < 2 parents)
     const person1Parents = getParentsOf(person1.id);
@@ -107,15 +114,25 @@ export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode
                 style={isHorizontalLayout ? { top: '75%' } : { left: '75%' }}
                 className="!bg-border-primary"
             />
-            <div className="group relative">
+            <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{
+                    opacity: isDimmed ? 0.3 : 1,
+                    scale: 1,
+                }}
+                transition={{
+                    duration: 0.3,
+                    ease: [0.4, 0, 0.2, 1],
+                }}
+                className="group relative"
+            >
                 <div
                     onMouseEnter={() => setHoveredNodeId(coupleNodeId)}
                     onMouseLeave={() => setHoveredNodeId(null)}
                     className={cx(
                         'flex cursor-pointer items-center gap-1 rounded-xl border border-primary bg-primary/80 p-1.5 shadow-xs backdrop-blur-sm transition-all',
                         isHorizontalLayout && 'flex-col',
-                        isSelected && 'border-brand-solid ring-4 ring-brand-solid/20',
-                        isDimmed && 'opacity-30'
+                        isSelected && 'border-brand-solid ring-4 ring-brand-solid/20'
                     )}
                 >
                     <PersonCard
@@ -131,6 +148,27 @@ export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode
                         isSelected={selectedPersonId === person2.id}
                         onClick={() => setSelectedPersonId(person2.id)}
                     />
+
+                    {showCollapseButton && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleCollapse(coupleNodeId);
+                            }}
+                            className={cx(
+                                'flex size-6 shrink-0 items-center justify-center rounded-md',
+                                'opacity-0 transition-all duration-200',
+                                'hover:bg-secondary',
+                                'group-hover:opacity-100',
+                                isCollapsed && 'opacity-100 bg-secondary'
+                            )}
+                            aria-label={isCollapsed ? 'Expand descendants' : 'Collapse descendants'}
+                        >
+                            <ChevronDown
+                                className={cx('size-4 text-tertiary transition-transform', isCollapsed && 'rotate-180')}
+                            />
+                        </button>
+                    )}
                 </div>
 
                 {onAddAction && (
@@ -169,7 +207,7 @@ export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode
                         </Dropdown.Popover>
                     </Dropdown.Root>
                 )}
-            </div>
+            </motion.div>
             <Handle type="source" id="children" position={handlePositions.children} className="!bg-border-primary" />
         </>
     );

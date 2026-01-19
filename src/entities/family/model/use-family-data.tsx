@@ -36,6 +36,8 @@ interface FamilyContextValue {
     setSelectedPersonId: (id: string | null) => void;
     hoveredNodeId: string | null;
     setHoveredNodeId: (id: string | null) => void;
+    collapsedNodeIds: Set<string>;
+    toggleCollapsed: (nodeId: string) => void;
     updatePerson: (id: string, updates: Partial<Person>) => void;
     addPerson: (person: Person) => void;
     deletePerson: (id: string) => void;
@@ -67,6 +69,19 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
     const [error, setError] = useState<string | null>(null);
     const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
     const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+    const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set());
+
+    const toggleCollapsed = useCallback((nodeId: string) => {
+        setCollapsedNodeIds((prev) => {
+            const next = new Set(prev);
+            if (next.has(nodeId)) {
+                next.delete(nodeId);
+            } else {
+                next.add(nodeId);
+            }
+            return next;
+        });
+    }, []);
 
     useEffect(() => {
         loadFromFile()
@@ -190,6 +205,8 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
         setSelectedPersonId,
         hoveredNodeId,
         setHoveredNodeId,
+        collapsedNodeIds,
+        toggleCollapsed,
         updatePerson,
         addPerson,
         deletePerson,
