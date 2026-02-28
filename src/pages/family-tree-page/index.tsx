@@ -4,7 +4,7 @@ import { FamilyTreeGraph } from '@/widgets/family-tree-graph';
 export function FamilyTreePage(): React.ReactNode {
     return (
         <FamilyProvider>
-            <div className="h-screen w-screen">
+            <div className="h-dvh w-screen">
                 <FamilyTreeGraph />
             </div>
         </FamilyProvider>

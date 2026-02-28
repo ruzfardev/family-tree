@@ -3,7 +3,6 @@ import {
     ReactFlow,
     Background,
     BackgroundVariant,
-    Panel,
     useNodesState,
     useEdgesState,
     useReactFlow,
@@ -17,7 +16,7 @@ import { useFamilyContext } from "@/entities/family";
 import type { FamilyData } from "@/entities/family";
 import { PersonNode } from "@/entities/person/ui/person-node";
 import { CoupleNode } from "@/entities/person/ui/couple-node";
-import { GraphToolbarMobile } from "@/features/layout-controls";
+import { GraphToolbarMobile, MobileBottomNav } from "@/features/layout-controls";
 import { BottomSheetPanel } from "@/features/edit-person";
 import { AddPersonProvider, useAddPersonContext } from "@/features/add-person";
 import { calculateDagreLayout } from "@/shared/lib/layout-engine/src";
@@ -106,36 +105,36 @@ function FamilyTreeGraphMobileContent({
     }, [setSelectedPersonId]);
 
     return (
-        <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onPaneClick={onPaneClick}
-            nodeTypes={nodeTypes}
-            edgeTypes={edgeTypes}
-            fitView
-            minZoom={0.1}
-            maxZoom={2}
-            // Mobile-specific props
-            panOnDrag={true}
-            panOnScroll={false}
-            zoomOnScroll={true}
-            zoomOnPinch={true}
-            zoomOnDoubleClick={false}
-            selectNodesOnDrag={false}
-            nodesConnectable={false}
-            nodesDraggable={false}
-            proOptions={{ hideAttribution: true }}
-            style={{ backgroundColor: "var(--color-bg-tertiary)" }}
-        >
-            <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="var(--color-border-primary)" />
-            <Panel position="top-left" className="!m-4">
-                <GraphToolbarMobile />
-            </Panel>
-            {/* No MiniMap on mobile for better performance */}
+        <>
+            <GraphToolbarMobile />
+            <ReactFlow
+                nodes={nodes}
+                edges={edges}
+                onNodesChange={onNodesChange}
+                onEdgesChange={onEdgesChange}
+                onPaneClick={onPaneClick}
+                nodeTypes={nodeTypes}
+                edgeTypes={edgeTypes}
+                fitView
+                minZoom={0.1}
+                maxZoom={2}
+                // Mobile-specific props
+                panOnDrag={true}
+                panOnScroll={false}
+                zoomOnScroll={true}
+                zoomOnPinch={true}
+                zoomOnDoubleClick={false}
+                selectNodesOnDrag={false}
+                nodesConnectable={false}
+                nodesDraggable={false}
+                proOptions={{ hideAttribution: true }}
+                style={{ backgroundColor: "var(--color-bg-tertiary)" }}
+            >
+                <Background variant={BackgroundVariant.Dots} gap={24} size={2} color="var(--color-border-primary)" />
+            </ReactFlow>
+            <MobileBottomNav />
             <BottomSheetPanel />
-        </ReactFlow>
+        </>
     );
 }
 

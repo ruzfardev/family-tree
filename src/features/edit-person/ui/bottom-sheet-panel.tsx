@@ -18,6 +18,7 @@ export function BottomSheetPanel(): React.ReactNode {
     const person = selectedPersonId ? getPersonById(selectedPersonId) : null;
     const [isExpanded, setIsExpanded] = useState(false);
     const [formData, setFormData] = useState<Partial<Person>>({});
+    const [dragStartY, setDragStartY] = useState(0);
 
     useEffect(() => {
         if (person) {
@@ -54,6 +55,11 @@ export function BottomSheetPanel(): React.ReactNode {
         setIsExpanded(false);
     }, [setSelectedPersonId]);
 
+    const handleDragStart = (e: React.PointerEvent) => setDragStartY(e.clientY);
+    const handleDragEnd = (e: React.PointerEvent) => {
+        if (e.clientY - dragStartY > 80) handleClose();
+    };
+
     if (!person) {
         return null;
     }
@@ -72,10 +78,15 @@ export function BottomSheetPanel(): React.ReactNode {
                     "pb-[env(safe-area-inset-bottom)]",
                     isExpanded ? "translate-y-0" : "translate-y-full"
                 )}
-                style={{ maxHeight: "85vh" }}
+                style={{ maxHeight: "85dvh" }}
             >
                 {/* Drag Handle */}
-                <div className="flex justify-center py-3" onClick={() => setIsExpanded(!isExpanded)}>
+                <div
+                    className="flex cursor-grab justify-center py-3 touch-none"
+                    onPointerDown={handleDragStart}
+                    onPointerUp={handleDragEnd}
+                    onClick={() => setIsExpanded(!isExpanded)}
+                >
                     <div className="h-1 w-10 rounded-full bg-quaternary" />
                 </div>
 
