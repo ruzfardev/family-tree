@@ -1,0 +1,10 @@
+{
+    "buildCommand": "yarn build",
+    "outputDirectory": "dist",
+    "functions": {
+        "api/family.ts": {
+            "memory": 128,
+            "maxDuration": 10
+        }
+    }
+}
