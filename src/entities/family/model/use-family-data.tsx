@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { Person } from '@/entities/person/model/types';
 import { LoadingIndicator } from '@/components/application/loading-indicator/loading-indicator';
@@ -65,6 +66,7 @@ interface FamilyProviderProps {
 }
 
 export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
+    const { t } = useTranslation();
     const [data, setData] = useState<FamilyData>(DEFAULT_DATA);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -185,7 +187,7 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
     if (isLoading) {
         return (
             <div className="flex h-screen items-center justify-center bg-primary">
-                <LoadingIndicator type="line-spinner" size="lg" label="Loading family data..." />
+                <LoadingIndicator type="line-spinner" size="lg" label={t('familyData.loading')} />
             </div>
         );
     }
@@ -193,7 +195,7 @@ export function FamilyProvider({ children }: FamilyProviderProps): ReactNode {
     if (error) {
         return (
             <div className="flex h-screen flex-col items-center justify-center gap-2 bg-primary">
-                <span className="text-lg font-medium text-error-primary">Failed to load family data</span>
+                <span className="text-lg font-medium text-error-primary">{t('familyData.errorMessage')}</span>
                 <span className="text-sm text-tertiary">{error}</span>
             </div>
         );

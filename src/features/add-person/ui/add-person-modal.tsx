@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { User01, User02, X } from '@untitledui/icons';
 
 import type { Gender } from '@/entities/person';
@@ -18,6 +19,7 @@ interface AddPersonModalProps {
 }
 
 export function AddPersonModal({ isOpen, context, onClose, onSubmit }: AddPersonModalProps): React.ReactNode {
+    const { t } = useTranslation();
     const [formData, setFormData] = useState<AddPersonFormData>(DEFAULT_FORM_DATA);
 
     // Reset form when modal opens with new context
@@ -40,16 +42,16 @@ export function AddPersonModal({ isOpen, context, onClose, onSubmit }: AddPerson
     }, [formData, onSubmit]);
 
     const getTitle = () => {
-        if (!context) return 'Add Person';
+        if (!context) return t('addPerson.title.default');
         switch (context.relation) {
             case 'child':
-                return 'Add Child';
+                return t('addPerson.title.child');
             case 'parent':
-                return 'Add Parent';
+                return t('addPerson.title.parent');
             case 'spouse':
-                return 'Add Spouse';
+                return t('addPerson.title.spouse');
             case 'self':
-                return 'Add First Person';
+                return t('addPerson.title.self');
         }
     };
 
@@ -67,36 +69,36 @@ export function AddPersonModal({ isOpen, context, onClose, onSubmit }: AddPerson
                                 color="tertiary"
                                 iconLeading={X}
                                 onClick={onClose}
-                                aria-label="Close"
+                                aria-label={t('common.close')}
                             />
                         </div>
 
                         {/* Form */}
                         <div className="flex flex-col gap-4 p-4">
                             <Input
-                                label="Name"
-                                placeholder="Enter name"
+                                label={t('common.name')}
+                                placeholder={t('common.namePlaceholder')}
                                 value={formData.name}
                                 onChange={(value) => handleChange('name', value)}
                                 autoFocus
                             />
 
                             <Input
-                                label="Birth Year"
-                                placeholder="YYYY"
+                                label={t('common.birthYear')}
+                                placeholder={t('common.yearPlaceholder')}
                                 value={formData.birthDate ?? ''}
                                 onChange={(value) => handleChange('birthDate', value)}
                             />
 
                             <Input
-                                label="Death Year"
-                                placeholder="YYYY (leave empty if living)"
+                                label={t('common.deathYear')}
+                                placeholder={t('common.deathPlaceholder')}
                                 value={formData.deathDate ?? ''}
                                 onChange={(value) => handleChange('deathDate', value)}
                             />
 
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-sm font-medium text-secondary">Gender</label>
+                                <label className="text-sm font-medium text-secondary">{t('common.gender')}</label>
                                 <ButtonGroup
                                     selectedKeys={[formData.gender]}
                                     onSelectionChange={(keys) => {
@@ -105,10 +107,10 @@ export function AddPersonModal({ isOpen, context, onClose, onSubmit }: AddPerson
                                     }}
                                 >
                                     <ButtonGroupItem id="male" iconLeading={User01}>
-                                        Male
+                                        {t('common.male')}
                                     </ButtonGroupItem>
                                     <ButtonGroupItem id="female" iconLeading={User02}>
-                                        Female
+                                        {t('common.female')}
                                     </ButtonGroupItem>
                                 </ButtonGroup>
                             </div>
@@ -117,10 +119,10 @@ export function AddPersonModal({ isOpen, context, onClose, onSubmit }: AddPerson
                         {/* Footer */}
                         <div className="flex justify-end gap-2 border-t border-secondary p-4">
                             <Button color="secondary" onClick={onClose}>
-                                Cancel
+                                {t('common.cancel')}
                             </Button>
                             <Button color="primary" onClick={handleSubmit} isDisabled={!formData.name.trim()}>
-                                Add Person
+                                {t('addPerson.submit')}
                             </Button>
                         </div>
                     </div>

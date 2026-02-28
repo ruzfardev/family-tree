@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Trash01, User01, User02, X, ChevronDown } from "@untitledui/icons";
 
 import type { Gender, Person } from "@/entities/person";
@@ -11,6 +12,7 @@ import { formatDateRange } from "@/shared/lib/format-date";
 import { cx } from "@/utils/cx";
 
 export function BottomSheetPanel(): React.ReactNode {
+    const { t } = useTranslation();
     const { selectedPersonId, setSelectedPersonId, getPersonById, updatePerson, deletePerson } = useFamilyContext();
 
     const person = selectedPersonId ? getPersonById(selectedPersonId) : null;
@@ -42,7 +44,7 @@ export function BottomSheetPanel(): React.ReactNode {
     );
 
     const handleDelete = useCallback(() => {
-        if (selectedPersonId && confirm("Are you sure you want to delete this person?")) {
+        if (selectedPersonId && confirm(t("editPerson.deleteConfirm"))) {
             deletePerson(selectedPersonId);
         }
     }, [selectedPersonId, deletePerson]);
@@ -91,9 +93,9 @@ export function BottomSheetPanel(): React.ReactNode {
                             color="tertiary"
                             iconLeading={ChevronDown}
                             onClick={() => setIsExpanded(false)}
-                            aria-label="Minimize"
+                            aria-label={t("editPerson.minimize")}
                         />
-                        <Button color="tertiary" iconLeading={X} onClick={handleClose} aria-label="Close panel" />
+                        <Button color="tertiary" iconLeading={X} onClick={handleClose} aria-label={t("editPerson.closePanel")} />
                     </div>
                 </div>
 
@@ -102,28 +104,28 @@ export function BottomSheetPanel(): React.ReactNode {
                     {/* Form */}
                     <div className="flex flex-col gap-4 p-4">
                         <Input
-                            label="Name"
-                            placeholder="Enter name"
+                            label={t("common.name")}
+                            placeholder={t("common.namePlaceholder")}
                             value={formData.name ?? ""}
                             onChange={(value) => handleChange("name", value)}
                         />
 
                         <Input
-                            label="Birth Date"
-                            placeholder="YYYY"
+                            label={t("editPerson.birthDate")}
+                            placeholder={t("common.yearPlaceholder")}
                             value={formData.birthDate ?? ""}
                             onChange={(value) => handleChange("birthDate", value)}
                         />
 
                         <Input
-                            label="Death Date"
-                            placeholder="YYYY (leave empty if living)"
+                            label={t("editPerson.deathDate")}
+                            placeholder={t("common.deathPlaceholder")}
                             value={formData.deathDate ?? ""}
                             onChange={(value) => handleChange("deathDate", value)}
                         />
 
                         <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-medium text-secondary">Gender</label>
+                            <label className="text-sm font-medium text-secondary">{t("common.gender")}</label>
                             <ButtonGroup
                                 selectedKeys={formData.gender ? [formData.gender] : []}
                                 onSelectionChange={(keys) => {
@@ -132,10 +134,10 @@ export function BottomSheetPanel(): React.ReactNode {
                                 }}
                             >
                                 <ButtonGroupItem id="male" iconLeading={User01}>
-                                    Male
+                                    {t("common.male")}
                                 </ButtonGroupItem>
                                 <ButtonGroupItem id="female" iconLeading={User02}>
-                                    Female
+                                    {t("common.female")}
                                 </ButtonGroupItem>
                             </ButtonGroup>
                         </div>
@@ -144,7 +146,7 @@ export function BottomSheetPanel(): React.ReactNode {
                     {/* Footer */}
                     <div className="border-t border-secondary p-4">
                         <Button color="primary-destructive" iconLeading={Trash01} className="w-full" onClick={handleDelete}>
-                            Delete Person
+                            {t("editPerson.deletePerson")}
                         </Button>
                     </div>
                 </div>

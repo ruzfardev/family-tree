@@ -1,7 +1,9 @@
+import "./i18n";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Route, Routes } from "react-router";
 import { registerSW } from "virtual:pwa-register";
+import i18n from "./i18n";
 import { FamilyTreePage } from "@/pages/family-tree-page";
 import { HomeScreen } from "@/pages/home-screen";
 import { NotFound } from "@/pages/not-found";
@@ -12,12 +14,12 @@ import "@/styles/globals.css";
 // Register service worker with update prompt
 const updateSW = registerSW({
     onNeedRefresh() {
-        if (confirm("New version available. Reload?")) {
+        if (confirm(i18n.t("pwa.updateAvailable"))) {
             updateSW(true);
         }
     },
     onOfflineReady() {
-        console.log("App ready to work offline");
+        console.log(i18n.t("pwa.offlineReady"));
     },
 });
 

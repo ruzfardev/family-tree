@@ -1,5 +1,6 @@
 import { Plus, UserPlus01, Users01, Heart, ChevronDown, ChevronUp } from '@untitledui/icons';
 import { Button as AriaButton } from 'react-aria-components';
+import { useTranslation } from 'react-i18next';
 
 import type { Person } from '@/entities/person';
 import { useFamilyContext } from '@/entities/family';
@@ -17,6 +18,7 @@ interface NodeActionMenuProps {
 }
 
 export function NodeActionMenu({ person, onAction, isCollapsed, onToggleCollapse, className }: NodeActionMenuProps): React.ReactNode {
+    const { t } = useTranslation();
     const { getParentsOf, getSpouseOf, hasChildren } = useFamilyContext();
 
     const parents = getParentsOf(person.id);
@@ -50,7 +52,7 @@ export function NodeActionMenu({ person, onAction, isCollapsed, onToggleCollapse
     return (
         <Dropdown.Root>
             <AriaButton
-                aria-label="Add family member"
+                aria-label={t('nodeMenu.triggerLabel')}
                 className={cx(
                     'absolute -right-2 -top-2 z-10 flex size-6 items-center justify-center',
                     'rounded-full bg-brand-solid text-white shadow-md',
@@ -64,19 +66,19 @@ export function NodeActionMenu({ person, onAction, isCollapsed, onToggleCollapse
                 <Plus className="size-4" />
             </AriaButton>
             <Dropdown.Popover placement="bottom start">
-                <Dropdown.Menu aria-label="Add family member">
-                    <Dropdown.Item label="Add Child" icon={Users01} onAction={handleAddChild} />
+                <Dropdown.Menu aria-label={t('nodeMenu.menuLabel')}>
+                    <Dropdown.Item label={t('nodeMenu.addChild')} icon={Users01} onAction={handleAddChild} />
                     {canAddParent && (
-                        <Dropdown.Item label="Add Parent" icon={UserPlus01} onAction={handleAddParent} />
+                        <Dropdown.Item label={t('nodeMenu.addParent')} icon={UserPlus01} onAction={handleAddParent} />
                     )}
                     {canAddSpouse && (
-                        <Dropdown.Item label="Add Spouse" icon={Heart} onAction={handleAddSpouse} />
+                        <Dropdown.Item label={t('nodeMenu.addSpouse')} icon={Heart} onAction={handleAddSpouse} />
                     )}
                     {canCollapse && (
                         <>
                             <Dropdown.Separator />
                             <Dropdown.Item
-                                label={isCollapsed ? 'Expand Descendants' : 'Collapse Descendants'}
+                                label={isCollapsed ? t('nodeMenu.expandDescendants') : t('nodeMenu.collapseDescendants')}
                                 icon={isCollapsed ? ChevronDown : ChevronUp}
                                 onAction={onToggleCollapse}
                             />

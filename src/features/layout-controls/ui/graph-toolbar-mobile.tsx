@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useReactFlow, getNodesBounds, getViewportForBounds } from "@xyflow/react";
 import { toPng } from "html-to-image";
 import {
@@ -19,19 +20,21 @@ import type { LayoutDirection } from "@/entities/family";
 import { useFamilyContext } from "@/entities/family";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
 import { useTheme } from "@/providers/theme-provider";
-
-const DIRECTION_BUTTONS: { value: LayoutDirection; icon: typeof ArrowDown; label: string }[] = [
-    { value: "TB", icon: ArrowDown, label: "Top to Bottom" },
-    { value: "BT", icon: ArrowUp, label: "Bottom to Top" },
-    { value: "LR", icon: ArrowRight, label: "Left to Right" },
-    { value: "RL", icon: ArrowLeft, label: "Right to Left" },
-];
+import { LanguageSwitcher } from "./language-switcher";
 
 export function GraphToolbarMobile(): React.ReactNode {
+    const { t } = useTranslation();
     const { data, setDirection } = useFamilyContext();
     const { zoomIn, zoomOut, fitView, getNodes } = useReactFlow();
     const { theme, setTheme } = useTheme();
     const [isExporting, setIsExporting] = useState(false);
+
+    const DIRECTION_BUTTONS: { value: LayoutDirection; icon: typeof ArrowDown; label: string }[] = [
+        { value: "TB", icon: ArrowDown, label: t("toolbar.topToBottom") },
+        { value: "BT", icon: ArrowUp, label: t("toolbar.bottomToTop") },
+        { value: "LR", icon: ArrowRight, label: t("toolbar.leftToRight") },
+        { value: "RL", icon: ArrowLeft, label: t("toolbar.rightToLeft") },
+    ];
 
     const currentDirection = data.settings.direction;
 
@@ -48,9 +51,9 @@ export function GraphToolbarMobile(): React.ReactNode {
     const getThemeIcon = () => (theme === "dark" ? Moon01 : Sun);
 
     const getThemeTooltip = () => {
-        if (theme === "light") return "Light mode";
-        if (theme === "dark") return "Dark mode";
-        return "System mode";
+        if (theme === "light") return t("toolbar.themeLightMobile");
+        if (theme === "dark") return t("toolbar.themeDarkMobile");
+        return t("toolbar.themeSystemMobile");
     };
 
     const handleDownloadImage = async () => {
@@ -120,7 +123,7 @@ export function GraphToolbarMobile(): React.ReactNode {
         <div className="flex flex-wrap items-center gap-1 rounded-lg border border-secondary bg-primary p-1 shadow-xs">
             {/* Logo */}
             <div className="flex items-center px-1">
-                <img src="logo.png" alt="Family Tree" className="size-6" />
+                <img src="logo.png" alt={t("toolbar.logoAlt")} className="size-6" />
             </div>
 
             {/* Divider */}
@@ -142,13 +145,13 @@ export function GraphToolbarMobile(): React.ReactNode {
             <div className="mx-1 h-5 w-px bg-border-secondary" />
 
             {/* Zoom Controls */}
-            <ButtonUtility icon={ZoomIn} size="sm" color="tertiary" tooltip="Zoom In" onClick={() => zoomIn()} />
-            <ButtonUtility icon={ZoomOut} size="sm" color="tertiary" tooltip="Zoom Out" onClick={() => zoomOut()} />
+            <ButtonUtility icon={ZoomIn} size="sm" color="tertiary" tooltip={t("toolbar.zoomIn")} onClick={() => zoomIn()} />
+            <ButtonUtility icon={ZoomOut} size="sm" color="tertiary" tooltip={t("toolbar.zoomOut")} onClick={() => zoomOut()} />
             <ButtonUtility
                 icon={Expand01}
                 size="sm"
                 color="tertiary"
-                tooltip="Fit View"
+                tooltip={t("toolbar.fitView")}
                 onClick={() => fitView({ padding: 0.2, duration: 500 })}
             />
 
@@ -166,17 +169,23 @@ export function GraphToolbarMobile(): React.ReactNode {
                 icon={isExporting ? Loading02 : Download01}
                 size="sm"
                 color="tertiary"
-                tooltip={isExporting ? "Exporting..." : "Download as Image"}
+                tooltip={isExporting ? t("toolbar.exporting") : t("toolbar.downloadImage")}
                 onClick={handleDownloadImage}
                 className={isExporting ? "animate-spin" : ""}
             />
+
+            {/* Divider */}
+            <div className="mx-1 h-5 w-px bg-border-secondary" />
+
+            {/* Language Switcher */}
+            <LanguageSwitcher />
 
             {/* Export Loading Overlay */}
             {isExporting && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
                     <div className="flex flex-col items-center gap-3 rounded-xl bg-primary p-6 shadow-lg">
                         <Loading02 className="size-8 animate-spin text-brand-solid" />
-                        <span className="text-sm font-medium text-primary">Exporting image...</span>
+                        <span className="text-sm font-medium text-primary">{t("toolbar.exportingImage")}</span>
                     </div>
                 </div>
             )}

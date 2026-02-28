@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Trash01, User01, User02, X } from '@untitledui/icons';
 
 import type { Gender, Person } from '@/entities/person';
@@ -10,6 +11,7 @@ import { Input } from '@/components/base/input/input';
 import { formatDateRange } from '@/shared/lib/format-date';
 
 export function SidebarPanel(): React.ReactNode {
+    const { t } = useTranslation();
     const { selectedPersonId, setSelectedPersonId, getPersonById, updatePerson, deletePerson } = useFamilyContext();
 
     const person = selectedPersonId ? getPersonById(selectedPersonId) : null;
@@ -38,7 +40,7 @@ export function SidebarPanel(): React.ReactNode {
     );
 
     const handleDelete = useCallback(() => {
-        if (selectedPersonId && confirm('Are you sure you want to delete this person?')) {
+        if (selectedPersonId && confirm(t('editPerson.deleteConfirm'))) {
             deletePerson(selectedPersonId);
         }
     }, [selectedPersonId, deletePerson]);
@@ -46,7 +48,7 @@ export function SidebarPanel(): React.ReactNode {
     if (!person) {
         return (
             <div className="flex w-72 flex-col items-center justify-center rounded-xl border border-secondary bg-primary p-6 shadow-lg">
-                <p className="text-sm text-tertiary">Select a person to edit</p>
+                <p className="text-sm text-tertiary">{t('editPerson.selectPrompt')}</p>
             </div>
         );
     }
@@ -64,34 +66,34 @@ export function SidebarPanel(): React.ReactNode {
                         <p className="text-xs text-tertiary">{formatDateRange(person.birthDate, person.deathDate)}</p>
                     </div>
                 </div>
-                <Button color="tertiary" iconLeading={X} onClick={() => setSelectedPersonId(null)} aria-label="Close panel" />
+                <Button color="tertiary" iconLeading={X} onClick={() => setSelectedPersonId(null)} aria-label={t('editPerson.closePanel')} />
             </div>
 
             {/* Form */}
             <div className="flex flex-col gap-4 p-4">
                 <Input
-                    label="Name"
-                    placeholder="Enter name"
+                    label={t('common.name')}
+                    placeholder={t('common.namePlaceholder')}
                     value={formData.name ?? ''}
                     onChange={(value) => handleChange('name', value)}
                 />
 
                 <Input
-                    label="Birth Date"
-                    placeholder="YYYY"
+                    label={t('editPerson.birthDate')}
+                    placeholder={t('common.yearPlaceholder')}
                     value={formData.birthDate ?? ''}
                     onChange={(value) => handleChange('birthDate', value)}
                 />
 
                 <Input
-                    label="Death Date"
-                    placeholder="YYYY (leave empty if living)"
+                    label={t('editPerson.deathDate')}
+                    placeholder={t('common.deathPlaceholder')}
                     value={formData.deathDate ?? ''}
                     onChange={(value) => handleChange('deathDate', value)}
                 />
 
                 <div className="flex flex-col gap-1.5">
-                    <label className="text-sm font-medium text-secondary">Gender</label>
+                    <label className="text-sm font-medium text-secondary">{t('common.gender')}</label>
                     <ButtonGroup
                         selectedKeys={formData.gender ? [formData.gender] : []}
                         onSelectionChange={(keys) => {
@@ -99,8 +101,8 @@ export function SidebarPanel(): React.ReactNode {
                             if (selected) handleChange('gender', selected);
                         }}
                     >
-                        <ButtonGroupItem id="male" iconLeading={User01}>Male</ButtonGroupItem>
-                        <ButtonGroupItem id="female" iconLeading={User02}>Female</ButtonGroupItem>
+                        <ButtonGroupItem id="male" iconLeading={User01}>{t('common.male')}</ButtonGroupItem>
+                        <ButtonGroupItem id="female" iconLeading={User02}>{t('common.female')}</ButtonGroupItem>
                     </ButtonGroup>
                 </div>
             </div>
@@ -108,7 +110,7 @@ export function SidebarPanel(): React.ReactNode {
             {/* Footer */}
             <div className="border-t border-secondary p-4">
                 <Button color="primary-destructive" iconLeading={Trash01} className="w-full" onClick={handleDelete}>
-                    Delete Person
+                    {t('editPerson.deletePerson')}
                 </Button>
             </div>
         </div>

@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, Plus, Users01, UserPlus01 } from '@untitledui/i
 import { User01, User02 } from '@untitledui/icons';
 import { motion } from 'motion/react';
 import { Button as AriaButton } from 'react-aria-components';
+import { useTranslation } from 'react-i18next';
 
 import type { Person } from '../model/types';
 
@@ -69,6 +70,7 @@ function PersonCard({ person, isSelected, onClick }: PersonCardProps) {
 }
 
 export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode {
+    const { t } = useTranslation();
     const { person1, person2, direction, isHighlighted, isDimmed, isCollapsed, person1HasParentConnection, person2HasParentConnection, hasChildConnection, onAddAction, onToggleCollapse } = data;
     const { selectedPersonId, setSelectedPersonId, setHoveredNodeId, getParentsOf, hasChildren } = useFamilyContext();
     const coupleNodeId = `couple-${person1.id}-${person2.id}`;
@@ -159,7 +161,7 @@ export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode
                 {onAddAction && (
                     <Dropdown.Root>
                         <AriaButton
-                            aria-label="Add family member"
+                            aria-label={t('nodeMenu.triggerLabel')}
                             className={cx(
                                 'absolute -right-2 -top-2 z-10 flex size-6 items-center justify-center',
                                 'rounded-full bg-brand-solid text-white shadow-md',
@@ -172,18 +174,18 @@ export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode
                             <Plus className="size-4" />
                         </AriaButton>
                         <Dropdown.Popover placement="bottom start">
-                            <Dropdown.Menu aria-label="Add family member">
-                                <Dropdown.Item label="Add Child" icon={Users01} onAction={handleAddChild} />
+                            <Dropdown.Menu aria-label={t('nodeMenu.menuLabel')}>
+                                <Dropdown.Item label={t('nodeMenu.addChild')} icon={Users01} onAction={handleAddChild} />
                                 {canAddParentToPerson1 && (
                                     <Dropdown.Item
-                                        label={`Add Parent to ${person1.name}`}
+                                        label={t('nodeMenu.addParentTo', { name: person1.name })}
                                         icon={UserPlus01}
                                         onAction={() => handleAddParent(person1.id)}
                                     />
                                 )}
                                 {canAddParentToPerson2 && (
                                     <Dropdown.Item
-                                        label={`Add Parent to ${person2.name}`}
+                                        label={t('nodeMenu.addParentTo', { name: person2.name })}
                                         icon={UserPlus01}
                                         onAction={() => handleAddParent(person2.id)}
                                     />
@@ -192,7 +194,7 @@ export function CoupleNode({ data, selected }: CoupleNodeProps): React.ReactNode
                                     <>
                                         <Dropdown.Separator />
                                         <Dropdown.Item
-                                            label={isCollapsed ? 'Expand Descendants' : 'Collapse Descendants'}
+                                            label={isCollapsed ? t('nodeMenu.expandDescendants') : t('nodeMenu.collapseDescendants')}
                                             icon={isCollapsed ? ChevronDown : ChevronUp}
                                             onAction={() => onToggleCollapse(coupleNodeId)}
                                         />
