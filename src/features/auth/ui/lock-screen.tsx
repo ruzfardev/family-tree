@@ -29,7 +29,7 @@ export function LockScreen({ onUnlock, onEnterAsGuest }: LockScreenProps) {
     };
 
     return (
-        <div className="flex h-dvh w-screen items-center justify-center bg-primary">
+        <div className="flex min-h-dvh w-screen items-center justify-center overflow-y-auto bg-primary py-10">
             <div className="flex w-full max-w-sm flex-col items-center gap-8 px-6">
                 {/* Logo */}
                 <img src="logo.png" alt={t('toolbar.logoAlt')} className="size-16" />
