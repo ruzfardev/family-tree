@@ -16,6 +16,7 @@ import '@xyflow/react/dist/style.css';
 
 import { useFamilyContext } from '@/entities/family';
 import type { FamilyData } from '@/entities/family';
+import { useAuthContext } from '@/features/auth';
 import { PersonNode } from '@/entities/person/ui/person-node';
 import { CoupleNode } from '@/entities/person/ui/couple-node';
 import { GraphToolbar } from '@/features/layout-controls';
@@ -54,6 +55,7 @@ function FamilyTreeGraphContent({
     toggleCollapsed,
 }: FamilyTreeGraphContentProps): React.ReactNode {
     const { openAddModal } = useAddPersonContext();
+    const { isGuest } = useAuthContext();
     const { fitView } = useReactFlow();
 
     const { nodes: initialNodes, edges: initialEdges } = useMemo(
@@ -85,7 +87,7 @@ function FamilyTreeGraphContent({
                     ...node,
                     data: {
                         ...node.data,
-                        onAddAction: openAddModal,
+                        onAddAction: isGuest ? undefined : openAddModal,
                         onToggleCollapse: toggleCollapsed,
                     },
                 };

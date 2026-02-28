@@ -81,5 +81,6 @@
     "lockScreen.passwordPlaceholder": "Parolni kiriting",
     "lockScreen.unlockButton": "Kirish",
     "lockScreen.wrongPassword": "Noto'g'ri parol. Qayta urinib ko'ring.",
-    "lockScreen.unlocking": "Tekshirilmoqda..."
+    "lockScreen.unlocking": "Tekshirilmoqda...",
+    "lockScreen.continueAsGuest": "Mehmon sifatida kirish"
 }

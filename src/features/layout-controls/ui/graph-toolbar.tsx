@@ -29,7 +29,7 @@ export function GraphToolbar(): React.ReactNode {
     const { data, setDirection } = useFamilyContext();
     const { zoomIn, zoomOut, fitView, getNodes } = useReactFlow();
     const { theme, setTheme } = useTheme();
-    const { lock, hasPassword } = useAuthContext();
+    const { lock, hasPassword, isGuest } = useAuthContext();
     const [isExporting, setIsExporting] = useState(false);
 
     const DIRECTION_BUTTONS: { value: LayoutDirection; icon: typeof ArrowDown; label: string }[] = [
@@ -142,19 +142,23 @@ export function GraphToolbar(): React.ReactNode {
             <div className="mx-1 h-5 w-px bg-border-secondary" />
 
             {/* Direction Controls */}
-            {DIRECTION_BUTTONS.map(({ value, icon, label }) => (
-                <ButtonUtility
-                    key={value}
-                    icon={icon}
-                    size="sm"
-                    color={currentDirection === value ? 'secondary' : 'tertiary'}
-                    tooltip={label}
-                    onClick={() => setDirection(value)}
-                />
-            ))}
+            {!isGuest && (
+                <>
+                    {DIRECTION_BUTTONS.map(({ value, icon, label }) => (
+                        <ButtonUtility
+                            key={value}
+                            icon={icon}
+                            size="sm"
+                            color={currentDirection === value ? 'secondary' : 'tertiary'}
+                            tooltip={label}
+                            onClick={() => setDirection(value)}
+                        />
+                    ))}
 
-            {/* Divider */}
-            <div className="mx-1 h-5 w-px bg-border-secondary" />
+                    {/* Divider */}
+                    <div className="mx-1 h-5 w-px bg-border-secondary" />
+                </>
+            )}
 
             {/* Zoom Controls */}
             <ButtonUtility

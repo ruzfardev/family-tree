@@ -4,6 +4,7 @@ import { Trash01, User01, User02, X } from '@untitledui/icons';
 
 import type { Gender, Person } from '@/entities/person';
 import { useFamilyContext } from '@/entities/family';
+import { useAuthContext } from '@/features/auth';
 import { Avatar } from '@/components/base/avatar/avatar';
 import { Button } from '@/components/base/buttons/button';
 import { ButtonGroup, ButtonGroupItem } from '@/components/base/button-group/button-group';
@@ -12,7 +13,10 @@ import { formatDateRange } from '@/shared/lib/format-date';
 
 export function SidebarPanel(): React.ReactNode {
     const { t } = useTranslation();
+    const { isGuest } = useAuthContext();
     const { selectedPersonId, setSelectedPersonId, getPersonById, updatePerson, deletePerson } = useFamilyContext();
+
+    if (isGuest) return null;
 
     const person = selectedPersonId ? getPersonById(selectedPersonId) : null;
 

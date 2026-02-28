@@ -9,11 +9,13 @@ import {
 import type { LayoutDirection } from "@/entities/family";
 import { useFamilyContext } from "@/entities/family";
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
+import { useAuthContext } from "@/features/auth";
 import { LanguageSwitcher } from "./language-switcher";
 
 export function GraphToolbarMobile(): React.ReactNode {
     const { t } = useTranslation();
     const { data, setDirection } = useFamilyContext();
+    const { isGuest } = useAuthContext();
 
     const DIRECTION_BUTTONS: { value: LayoutDirection; icon: typeof ArrowDown; label: string }[] = [
         { value: "TB", icon: ArrowDown, label: t("toolbar.topToBottom") },
@@ -35,20 +37,24 @@ export function GraphToolbarMobile(): React.ReactNode {
             <div className="h-6 w-px bg-border-secondary" />
 
             {/* Direction Controls */}
-            {DIRECTION_BUTTONS.map(({ value, icon, label }) => (
-                <ButtonUtility
-                    key={value}
-                    icon={icon}
-                    size="sm"
-                    className="p-2.5! focus:outline-none"
-                    color={currentDirection === value ? "secondary" : "tertiary"}
-                    tooltip={label}
-                    onClick={() => setDirection(value)}
-                />
-            ))}
+            {!isGuest && (
+                <>
+                    {DIRECTION_BUTTONS.map(({ value, icon, label }) => (
+                        <ButtonUtility
+                            key={value}
+                            icon={icon}
+                            size="sm"
+                            className="p-2.5! focus:outline-none"
+                            color={currentDirection === value ? "secondary" : "tertiary"}
+                            tooltip={label}
+                            onClick={() => setDirection(value)}
+                        />
+                    ))}
 
-            {/* Divider */}
-            <div className="h-6 w-px bg-border-secondary" />
+                    {/* Divider */}
+                    <div className="h-6 w-px bg-border-secondary" />
+                </>
+            )}
 
             {/* Language Switcher */}
             <LanguageSwitcher />

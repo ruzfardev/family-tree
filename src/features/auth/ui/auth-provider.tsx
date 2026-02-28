@@ -4,14 +4,14 @@ import { AuthContext } from '../model/auth-context';
 import { LockScreen } from './lock-screen';
 
 export function AuthProvider({ children }: PropsWithChildren) {
-    const { isAuthenticated, unlock, lock, hasPassword } = useAuth();
+    const { isAuthenticated, isGuest, unlock, enterAsGuest, lock, hasPassword } = useAuth();
 
-    if (!isAuthenticated) {
-        return <LockScreen onUnlock={unlock} />;
+    if (!isAuthenticated && !isGuest) {
+        return <LockScreen onUnlock={unlock} onEnterAsGuest={enterAsGuest} />;
     }
 
     return (
-        <AuthContext.Provider value={{ lock, hasPassword }}>
+        <AuthContext.Provider value={{ lock, hasPassword, isGuest }}>
             {children}
         </AuthContext.Provider>
     );

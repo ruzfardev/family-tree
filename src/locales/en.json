@@ -81,5 +81,6 @@
     "lockScreen.passwordPlaceholder": "Enter password",
     "lockScreen.unlockButton": "Unlock",
     "lockScreen.wrongPassword": "Incorrect password. Try again.",
-    "lockScreen.unlocking": "Unlocking..."
+    "lockScreen.unlocking": "Unlocking...",
+    "lockScreen.continueAsGuest": "Continue as Guest"
 }

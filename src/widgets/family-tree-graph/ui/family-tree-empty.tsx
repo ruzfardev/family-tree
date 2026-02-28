@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { EmptyState } from '@/components/application/empty-state/empty-state';
 import { Button } from '@/components/base/buttons/button';
+import { useAuthContext } from '@/features/auth';
 
 interface FamilyTreeEmptyProps {
     onAddFirstPerson: () => void;
@@ -8,6 +9,7 @@ interface FamilyTreeEmptyProps {
 
 export function FamilyTreeEmpty({ onAddFirstPerson }: FamilyTreeEmptyProps) {
     const { t } = useTranslation();
+    const { isGuest } = useAuthContext();
 
     return (
         <div className="flex h-full items-center justify-center bg-tertiary">
@@ -21,11 +23,13 @@ export function FamilyTreeEmpty({ onAddFirstPerson }: FamilyTreeEmptyProps) {
                         {t('familyTreeEmpty.description')}
                     </EmptyState.Description>
                 </EmptyState.Content>
-                <EmptyState.Footer>
-                    <Button color="primary" onClick={onAddFirstPerson}>
-                        {t('familyTreeEmpty.addFirst')}
-                    </Button>
-                </EmptyState.Footer>
+                {!isGuest && (
+                    <EmptyState.Footer>
+                        <Button color="primary" onClick={onAddFirstPerson}>
+                            {t('familyTreeEmpty.addFirst')}
+                        </Button>
+                    </EmptyState.Footer>
+                )}
             </EmptyState>
         </div>
     );

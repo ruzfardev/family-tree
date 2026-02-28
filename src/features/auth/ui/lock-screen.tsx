@@ -5,9 +5,10 @@ import { Button } from '@/components/base/buttons/button';
 
 interface LockScreenProps {
     onUnlock: (password: string) => Promise<boolean>;
+    onEnterAsGuest: () => void;
 }
 
-export function LockScreen({ onUnlock }: LockScreenProps) {
+export function LockScreen({ onUnlock, onEnterAsGuest }: LockScreenProps) {
     const { t } = useTranslation();
     const [password, setPassword] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -66,6 +67,22 @@ export function LockScreen({ onUnlock }: LockScreenProps) {
                         {isLoading ? t('lockScreen.unlocking') : t('lockScreen.unlockButton')}
                     </Button>
                 </form>
+
+                {/* Guest access */}
+                <div className="flex w-full items-center gap-3">
+                    <hr className="flex-1 border-secondary" />
+                    <span className="text-xs text-tertiary">or</span>
+                    <hr className="flex-1 border-secondary" />
+                </div>
+
+                <Button
+                    color="secondary"
+                    size="lg"
+                    className="w-full justify-center"
+                    onClick={onEnterAsGuest}
+                >
+                    {t('lockScreen.continueAsGuest')}
+                </Button>
             </div>
         </div>
     );

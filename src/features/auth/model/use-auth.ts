@@ -11,6 +11,10 @@ export function useAuth() {
         () => noPasswordSet || sessionStorage.getItem(AUTH_KEY) === 'unlocked'
     );
 
+    const [isGuest, setIsGuest] = useState(
+        () => sessionStorage.getItem(AUTH_KEY) === 'guest'
+    );
+
     const unlock = async (password: string): Promise<boolean> => {
         const hash = await sha256(password);
         if (hash === PASSWORD_HASH) {
@@ -21,10 +25,16 @@ export function useAuth() {
         return false;
     };
 
+    const enterAsGuest = () => {
+        sessionStorage.setItem(AUTH_KEY, 'guest');
+        setIsGuest(true);
+    };
+
     const lock = () => {
         sessionStorage.removeItem(AUTH_KEY);
         setIsAuthenticated(false);
+        setIsGuest(false);
     };
 
-    return { isAuthenticated, unlock, lock, hasPassword: !noPasswordSet };
+    return { isAuthenticated, isGuest, unlock, enterAsGuest, lock, hasPassword: !noPasswordSet };
 }
