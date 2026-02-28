@@ -1,5 +1,14 @@
 {
-    "members": [],
+    "members": [
+        {
+            "id": "person-mm6bsbus-35o5tn",
+            "name": "ads",
+            "birthDate": "q112",
+            "deathDate": "2222",
+            "gender": "male",
+            "parentIds": []
+        }
+    ],
     "settings": {
         "direction": "TB"
     }

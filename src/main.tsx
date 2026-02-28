@@ -9,6 +9,7 @@ import { HomeScreen } from "@/pages/home-screen";
 import { NotFound } from "@/pages/not-found";
 import { RouteProvider } from "@/providers/router-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { AuthProvider } from "@/features/auth";
 import "@/styles/globals.css";
 
 // Register service worker with update prompt
@@ -26,15 +27,17 @@ const updateSW = registerSW({
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
-            <BrowserRouter basename="/family-tree">
-                <RouteProvider>
-                    <Routes>
-                        <Route path="/" element={<FamilyTreePage />} />
-                        <Route path="/home" element={<HomeScreen />} />
-                        <Route path="*" element={<NotFound />} />
-                    </Routes>
-                </RouteProvider>
-            </BrowserRouter>
+            <AuthProvider>
+                <BrowserRouter basename="/family-tree">
+                    <RouteProvider>
+                        <Routes>
+                            <Route path="/" element={<FamilyTreePage />} />
+                            <Route path="/home" element={<HomeScreen />} />
+                            <Route path="*" element={<NotFound />} />
+                        </Routes>
+                    </RouteProvider>
+                </BrowserRouter>
+            </AuthProvider>
         </ThemeProvider>
     </StrictMode>,
 );

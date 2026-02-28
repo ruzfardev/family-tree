@@ -14,12 +14,14 @@ import {
     Moon01,
     Download01,
     Loading02,
+    Lock01,
 } from '@untitledui/icons';
 
 import type { LayoutDirection } from '@/entities/family';
 import { useFamilyContext } from '@/entities/family';
 import { ButtonUtility } from '@/components/base/buttons/button-utility';
 import { useTheme } from '@/providers/theme-provider';
+import { useAuthContext } from '@/features/auth';
 import { LanguageSwitcher } from './language-switcher';
 
 export function GraphToolbar(): React.ReactNode {
@@ -27,6 +29,7 @@ export function GraphToolbar(): React.ReactNode {
     const { data, setDirection } = useFamilyContext();
     const { zoomIn, zoomOut, fitView, getNodes } = useReactFlow();
     const { theme, setTheme } = useTheme();
+    const { lock, hasPassword } = useAuthContext();
     const [isExporting, setIsExporting] = useState(false);
 
     const DIRECTION_BUTTONS: { value: LayoutDirection; icon: typeof ArrowDown; label: string }[] = [
@@ -206,6 +209,20 @@ export function GraphToolbar(): React.ReactNode {
 
             {/* Language Switcher */}
             <LanguageSwitcher />
+
+            {/* Lock */}
+            {hasPassword && (
+                <>
+                    <div className="mx-1 h-5 w-px bg-border-secondary" />
+                    <ButtonUtility
+                        icon={Lock01}
+                        size="sm"
+                        color="tertiary"
+                        tooltip={t('toolbar.lock')}
+                        onClick={lock}
+                    />
+                </>
+            )}
 
             {/* Export Loading Overlay */}
             {isExporting && (

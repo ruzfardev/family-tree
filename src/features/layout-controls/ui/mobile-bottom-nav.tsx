@@ -10,15 +10,18 @@ import {
     Moon01,
     Download01,
     Loading02,
+    Lock01,
 } from "@untitledui/icons";
 
 import { ButtonUtility } from "@/components/base/buttons/button-utility";
 import { useTheme } from "@/providers/theme-provider";
+import { useAuthContext } from "@/features/auth";
 
 export function MobileBottomNav(): React.ReactNode {
     const { t } = useTranslation();
     const { zoomIn, zoomOut, fitView, getNodes } = useReactFlow();
     const { theme, setTheme } = useTheme();
+    const { lock, hasPassword } = useAuthContext();
     const [isExporting, setIsExporting] = useState(false);
 
     const toggleTheme = () => {
@@ -135,6 +138,14 @@ export function MobileBottomNav(): React.ReactNode {
                     tooltip={isExporting ? t("toolbar.exporting") : t("toolbar.downloadImage")}
                     onClick={handleDownloadImage}
                 />
+
+                {/* Lock */}
+                {hasPassword && (
+                    <>
+                        <div className="h-6 w-px bg-border-secondary" />
+                        <ButtonUtility icon={Lock01} size="sm" className="p-3! focus:outline-none" color="tertiary" tooltip={t("toolbar.lock")} onClick={lock} />
+                    </>
+                )}
             </div>
 
             {/* Export Loading Overlay */}

@@ -48,6 +48,7 @@
     "toolbar.themeLightMobile": "Kunduzgi rejim",
     "toolbar.themeDarkMobile": "Qorongʻi rejim",
     "toolbar.themeSystemMobile": "Tizim rejimi",
+    "toolbar.lock": "Qulflash",
     "toolbar.downloadImage": "Rasm sifatida yuklab olish",
     "toolbar.exporting": "Eksport qilinmoqda...",
     "toolbar.exportingImage": "Rasm eksport qilinmoqda...",
@@ -72,5 +73,13 @@
 
     "language.switch": "Til",
     "language.en": "English",
-    "language.uz": "O'zbek"
+    "language.uz": "O'zbek",
+
+    "lockScreen.title": "Shajara",
+    "lockScreen.subtitle": "Kirish uchun parolni kiriting",
+    "lockScreen.passwordLabel": "Parol",
+    "lockScreen.passwordPlaceholder": "Parolni kiriting",
+    "lockScreen.unlockButton": "Kirish",
+    "lockScreen.wrongPassword": "Noto'g'ri parol. Qayta urinib ko'ring.",
+    "lockScreen.unlocking": "Tekshirilmoqda..."
 }

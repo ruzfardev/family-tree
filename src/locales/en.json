@@ -48,6 +48,7 @@
     "toolbar.themeLightMobile": "Light mode",
     "toolbar.themeDarkMobile": "Dark mode",
     "toolbar.themeSystemMobile": "System mode",
+    "toolbar.lock": "Lock",
     "toolbar.downloadImage": "Download as Image",
     "toolbar.exporting": "Exporting...",
     "toolbar.exportingImage": "Exporting image...",
@@ -72,5 +73,13 @@
 
     "language.switch": "Language",
     "language.en": "English",
-    "language.uz": "O'zbek"
+    "language.uz": "O'zbek",
+
+    "lockScreen.title": "Family Tree",
+    "lockScreen.subtitle": "Enter password to access",
+    "lockScreen.passwordLabel": "Password",
+    "lockScreen.passwordPlaceholder": "Enter password",
+    "lockScreen.unlockButton": "Unlock",
+    "lockScreen.wrongPassword": "Incorrect password. Try again.",
+    "lockScreen.unlocking": "Unlocking..."
 }
