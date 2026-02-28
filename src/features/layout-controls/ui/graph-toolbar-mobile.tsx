@@ -4,6 +4,7 @@ import {
     ArrowUp,
     ArrowLeft,
     ArrowRight,
+    Lock01,
 } from "@untitledui/icons";
 
 import type { LayoutDirection } from "@/entities/family";
@@ -15,7 +16,7 @@ import { LanguageSwitcher } from "./language-switcher";
 export function GraphToolbarMobile(): React.ReactNode {
     const { t } = useTranslation();
     const { data, setDirection } = useFamilyContext();
-    const { isGuest } = useAuthContext();
+    const { isGuest, lock, hasPassword } = useAuthContext();
 
     const DIRECTION_BUTTONS: { value: LayoutDirection; icon: typeof ArrowDown; label: string }[] = [
         { value: "TB", icon: ArrowDown, label: t("toolbar.topToBottom") },
@@ -58,6 +59,21 @@ export function GraphToolbarMobile(): React.ReactNode {
 
             {/* Language Switcher */}
             <LanguageSwitcher />
+
+            {/* Lock */}
+            {hasPassword && (
+                <>
+                    <div className="h-6 w-px bg-border-secondary" />
+                    <ButtonUtility
+                        icon={Lock01}
+                        size="sm"
+                        className="p-2.5! focus:outline-none"
+                        color="tertiary"
+                        tooltip={t("toolbar.lock")}
+                        onClick={lock}
+                    />
+                </>
+            )}
         </div>
     );
 }
