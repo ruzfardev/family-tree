@@ -28,7 +28,7 @@ createRoot(document.getElementById("root")!).render(
     <StrictMode>
         <ThemeProvider>
             <AuthProvider>
-                <BrowserRouter basename="/family-tree">
+                <BrowserRouter>
                     <RouteProvider>
                         <Routes>
                             <Route path="/" element={<FamilyTreePage />} />

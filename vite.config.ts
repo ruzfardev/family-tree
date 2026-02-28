@@ -43,7 +43,7 @@ function familyTreeApi(): Plugin {
 }
 
 export default defineConfig({
-    base: "/family-tree/",
+    base: "/",
     plugins: [
         react(),
         tailwindcss(),
@@ -59,7 +59,7 @@ export default defineConfig({
                 background_color: "#ffffff",
                 display: "standalone",
                 orientation: "any",
-                start_url: "/family-tree/",
+                start_url: "/",
                 icons: [
                     { src: "pwa-192x192.png", sizes: "192x192", type: "image/png" },
                     { src: "pwa-512x512.png", sizes: "512x512", type: "image/png" },
